@@ -20,18 +20,20 @@ RDoc::Task.new(:rdoc) do |rdoc|
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
 
-
-
 Bundler::GemHelper.install_tasks
 
-require 'rake/testtask'
-
-Rake::TestTask.new(:test) do |t|
-  t.libs << 'lib'
-  t.libs << 'test'
-  t.pattern = 'test/**/*_test.rb'
-  t.verbose = false
+desc 'Default: run the specs and features.'
+task :default => 'spec:unit' do
+  system("bundle exec rake spec")
 end
 
+namespace :spec do
 
-task :default => :test
+  desc "Run unit specs"
+  RSpec::Core::RakeTask.new('unit') do |t|
+    t.pattern = 'spec/{*_spec.rb}'
+  end
+end
+
+desc "Run the unit tests"
+task :spec => ['spec:unit']
