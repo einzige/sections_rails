@@ -1,4 +1,4 @@
-class InitializerGenerator < Rails::Generators::Base
+class SectionsGenerator < Rails::Generators::Base
 
   def create_sections_folder
     empty_directory "app/sections"
