@@ -1,17 +1,17 @@
-# SectionsRails
-
-Rails provides amazing infrastructure and conventions for serverside code. 
-For the view layer, however, it falls short. 
-It does provide _partials_ to break up the HTML code into individual sections, 
+Ruby on Rails provides amazing infrastructure and conventions for well-structured serverside code. 
+It falls short, however, for the view layer. 
+_Partials_ are a way to break up the HTML code of complex web pages into individual sections, 
 but no such facilities are available for CSS and JavaScript. 
-As a result, these assets are either defined in a few huge files, or in smaller ones which
-have no correlation to each other.
+As a result, the CSS and JS assets are either defined in a few huge files
+- which are hard to maintain ond oftenly accumulate code that is no longer used -
+or better broken up inho smaller files within the _/app/assets/javascripts_ and _stylesheet_ folders,
+but even then these different files have no correlation to each other because they are in different places.
 
-_sections-rails_ fills that gap by adding infrastructure to the view layer in Ruby on Rails
-that represents the code (HTML, CSS, and JavaScript) of dedicated 
-sections of the applications views in separate files.
+_Sections_rails_ fills that gap by adding infrastructure to the view layer in Ruby on Rails
+that allows to define the code (HTML, CSS, and JavaScript) of dedicated 
+sections of the applications views in one place.
 
-## Example
+# Example
 
 Let's assume a web page has a navigation menu on the left side. This menu contains of
 certain HTML, CSS, and JavaScript code. _Sections_rails_ allows to define all three types
@@ -27,7 +27,7 @@ To render the menu in your view, and include all the necessary CSS and JS files,
 
 
 
-## Installation
+# Installation
 
 In your Gemfile:
 
@@ -51,7 +51,7 @@ The generator does the following things:
 3.  It optionally creates a demo section called "hello_world".
 
 
-## Usage
+# Usage
 
 To use the "hello_world" section, simply put this in your views:
 
@@ -79,11 +79,10 @@ bundles.
 3   Run rake assets:precompile
 
 
-## Missing features
+# Missing features
 
 _Sections_rails_ is in early development and far from complete. Missing features are:
 
 * Support for alternative formats for assets like CoffeeScript, Sass etc
 * Support for page-specific asset files
 * better integration into asset precompilation
-
