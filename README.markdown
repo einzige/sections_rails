@@ -90,6 +90,8 @@ bundles for production mode.
 
 _Sections_rails_ is in early development and far from complete. Missing features are:
 
-* Support for alternative asset formats like CoffeeScript, Haml, Sass etc.
-* Support for page-specific asset files.
+* Support for multiple assets, and assets per section
+* support for assets in different formats like CoffeeScript, Haml, Sass etc.
+* Support for page-specific compiled asset files instead of one global one
 * Better integration into the asset precompilation workflow.
+* Include serverside controller logic for sections by integrating with https://github.com/apotonick/cells or something comparable
