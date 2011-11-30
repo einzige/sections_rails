@@ -42,7 +42,7 @@ The generator does the following things:
 1.  It creates a new folder __/app/sections__,
     in which you put the source code for the different sections.
 
-2.  It includes the folder _/app/sections_ in the asset pipeline by adding this line into your _application.rb_ file:
+2.  It adds the folder _/app/sections_ to the asset pipeline by inserting this line into your _application.rb_ file:
 
         config.assets.paths << 'app/sections'
 
@@ -55,8 +55,8 @@ To use the "hello_world" section created by the sections generator, simply add i
 
     <%= section :hello_world %>
 
-If your section renders itself completely in JavaScript, you can omit the partial file for this section.
-In this case, _sections_rails_ creates an empty div in the view.
+If your section renders itself completely in JavaScript, you can omit its partial file.
+In this case, the _sections_ command creates an empty div in the view.
 
     <div class="hello_world"></div>
 
