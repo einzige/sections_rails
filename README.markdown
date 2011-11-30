@@ -1,22 +1,24 @@
 Ruby on Rails provides amazing infrastructure and conventions for well-structured serverside code. 
 It falls short, however, for the view layer. 
 
-_Partials_ are a way to break up the HTML code of complex web pages into individual sections, 
-but no such facilities are available for CSS and JavaScript. 
+_Partials_ provide a nice way to break up the HTML code of complex web pages into individual sections, 
+but no such facilities are available for the corresponding CSS and JavaScript. 
 As a result, the CSS and JS assets are either defined in a few huge files
-(which are hard to maintain ond oftenly accumulate code that is no longer used)
+(which are hard to maintain ond often accumulate code that is no longer used)
 or are broken up into smaller files located within the _/app/assets/javascripts_ and _app/assets/stylesheets_ folders,
-but even then the different files have no correlation to each other because they are in different places.
+but even then the different files have no visible correlation to each other, and creating and using on them as a unit 
+is cumbersome and error prone.
 
 _Sections_rails_ fills that gap by adding infrastructure to the view layer in Ruby on Rails
-that allows to define the code (HTML, CSS, and JavaScript) of dedicated 
-sections of the applications views in one place.
+that allows to define and use the code (HTML, CSS, and JavaScript) of dedicated 
+sections of applications views in one place.
 
 # Example
 
 Let's assume a web page has a navigation menu on the left side. 
-This menu requires certain HTML, CSS, and JavaScript code that is very specific to that menu.
-_Sections_rails_ allows to define this code in a special folder structure:
+This menu requires certain HTML, CSS, and JavaScript code that is specific to that menu, and isn't (and shouldn't)
+be used in other parts of the site.
+_Sections_rails_ allows to define this code in one folder:
 
     /app/sections/menu/_menu.html.erb
                        menu.css
@@ -26,7 +28,7 @@ To display this menu in a view, simply do this:
 
     <%= section :menu %>
 
-This inserts the partial as well as the JS and CSS files in the view.
+This inserts the partial as well as the JS and CSS files into the view.
 
 
 # Installation
@@ -41,10 +43,10 @@ Then set up the directory structure:
 
 The generator does the following things:
 
-1.  It create a new folder __/app/sections__,
+1.  It creates a new folder __/app/sections__,
     in which you put the source code for the different sections.
 
-2.  It includes the folder /app/sections in the asset pipeline by adding this line into your _application.rb_ file:
+2.  It includes the folder _/app/sections_ in the asset pipeline by adding this line into your _application.rb_ file:
 
         config.assets.paths << 'app/sections'
 
@@ -53,12 +55,11 @@ The generator does the following things:
 
 # Usage
 
-To use the "hello_world" section created by the sections generator, simply put this in your views:
+To use the "hello_world" section created by the sections generator, simply put this in a view:
 
     <%= section :hello_world %>
 
-All files inside a section folder are optional.
-If the partial file is missing, _sections_rails_ would create the following empty div in the view instead.
+If the partial file for a section is not provided, _sections_rails_ creates the following empty div in the view instead.
 
     <div class="hello_world"></div>
 
@@ -68,9 +69,9 @@ If the partial file is missing, _sections_rails_ would create the following empt
 _Sections_rails_ provides facilities to include the assets of sections in the global asset
 bundles for production mode.
 
-1.  Run __rake rake sections:prepare__
+1.  Run __rake sections:prepare__
     
-    This rake task creates helper files that configure the asset pipeline to include the assets from the sections.
+    This rake task creates helper files that tell the asset pipeline about the assets from the sections.
 
     * /app/assets/javascripts/application_sections.js: links to all JS files of all sections.
     * /app/assets/stylesheets/application_sections.js: links to all CSS files of all sections.
