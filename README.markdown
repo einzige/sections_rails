@@ -1,13 +1,9 @@
-Ruby on Rails provides amazing infrastructure and conventions for well-structured serverside code. 
-It falls short, however, for the view layer. 
+Ruby on Rails provides an amazing infrastructure and conventions for well-structured serverside code. 
+It falls, however, short for the view layer. 
 
-_Partials_ provide a nice way to break up the HTML code of complex web pages into individual sections, 
+_Partials_ provide a nice way to provide the HTML code of individual sections within complex web pages, 
 but no such facilities are available for the corresponding CSS and JavaScript. 
-As a result, the CSS and JS assets are either defined in a few huge files
-(which are hard to maintain ond often accumulate code that is no longer used)
-or are broken up into smaller files located within the _/app/assets/javascripts_ and _app/assets/stylesheets_ folders,
-but even then the different files have no visible correlation to each other, and creating and using on them as a unit 
-is cumbersome and error prone.
+This leaves this task completely up to the user.
 
 _Sections_rails_ fills that gap by adding infrastructure to the view layer in Ruby on Rails
 that allows to define and use the code (HTML, CSS, and JavaScript) of dedicated 
