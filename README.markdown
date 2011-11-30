@@ -75,10 +75,12 @@ bundles for production mode.
 
 2.  Include the generated helper files into your _application.js_ and _application.css_ files.
 
-        // In application.js
+    In application.js:
+    
         //= require application_sections
 
-        /* In application.css */
+    In application.css:
+    
         /*= require application_sections */    
 
 3.  Run __rake assets:precompile__ as usual.
