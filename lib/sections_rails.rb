@@ -1,4 +1,6 @@
 module SectionsRails
+
+  require "sections_rails/railtie" if defined?(Rails)
   
   def section name
     out = []
