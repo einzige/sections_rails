@@ -92,4 +92,4 @@ _Sections_rails_ is in early development and far from complete. Missing features
 
 * Support for alternative asset formats like CoffeeScript, Haml, Sass etc.
 * Support for page-specific asset files.
-* Better integration into asset precompilation.
+* Better integration into the asset precompilation workflow.
