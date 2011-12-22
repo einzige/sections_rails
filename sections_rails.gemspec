@@ -11,10 +11,10 @@ Gem::Specification.new do |s|
   s.email       = ["kevin.goslar@gmail.com"]
   s.homepage    = "https://github.com/kevgo/sections_rails"
   s.summary     = "A rails plugin that allows to define the HTML, CSS, and JS for individual sections of pages as one unit."
-  s.description = ""
+  s.description = "Sections_rails adds infrastructure to the view layer of Ruby on Rails. It allows to define and use the HTML, CSS, and JavaScript code of dedicated sections of pages together in one place."
 
-  s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.rdoc"]
-  s.test_files = Dir["test/**/*"]
+  s.files = Dir["{lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.markdown"]
+  s.test_files = Dir["spec/**/*"]
 
   s.add_dependency "rails", "~> 3.1"
 
