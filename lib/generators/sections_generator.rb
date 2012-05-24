@@ -22,7 +22,7 @@ class SectionsGenerator < Rails::Generators::Base
 
     # Create the partial.
     create_file "app/sections/hello_world/_hello_world.html.erb", <<-END_STR
-<!-- This file contains the HTML for the 'hello world' section. -->
+<%# This file contains the HTML for the 'hello world' section. %>
 
 <div class="hello_world">
   <h2>Hello World!</h2>
