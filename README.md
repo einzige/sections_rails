@@ -82,5 +82,5 @@ _Sections_rails_ is in prototypical development and far from complete. Missing f
 * Support for multiple application assets, for example page-specific compiled asset files instead of one global one.
 * Support for assets in different formats like CoffeeScript, Haml, Sass etc.
 * Support for serverside controller logic for sections, for example by integrating with https://github.com/apotonick/cells.
-* More natural asset pipeline support by extending Sprockets to parse section calls.
+* More natural integration into the asset pipeline.
 
