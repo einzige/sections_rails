@@ -2,16 +2,16 @@ class SectionsGenerator < Rails::Generators::Base
 
   def create_sections_folder
     say ''
-    say ' STEP 1: Creating sections folder'
+    say 'STEP 1: Creating sections folder'
     say ''
     empty_directory "app/sections"
     inject_into_file 'config/application.rb',
                      "    config.assets.paths << 'app/sections'\n",
                      :after => /config.assets.enabled\s*=.*\n/
     say ''
-    say ' I have made some modifications to '
+    say '  I have made some modifications to '
     say 'config/application.rb', Thor::Shell::Color::BOLD
-    say ' Please review them before submitting these changes to your code repository.'
+    say '  Please review them before submitting these changes to your code repository.'
     say ''
   end
   
@@ -35,18 +35,18 @@ class SectionsGenerator < Rails::Generators::Base
     END_STR
 
     say ''
-    say ' I have created two files to reference the assets from the sections.'
-    say ' * '
+    say '  I have created two files to reference the assets from the sections.'
+    say '  * '
     say 'app/assets/javascripts/application_sections.js', Thor::Shell::Color::BOLD
-    say ' * '
+    say '  * '
     say 'app/assets/stylesheets/application_sections.css', Thor::Shell::Color::BOLD
     say ''
-    say ' They should be checked into your code repository the way they are, and remain that way.'
-    say ' When running "rake assets:precompile" during deployment,'
-    say ' they will be updated with the actually used assets for proper operation in production mode.'
+    say '  They should be checked into your code repository the way they are, and remain that way.'
+    say '  When running "rake assets:precompile" during deployment,'
+    say '  they will be updated with the actually used assets for proper operation in production mode.'
     say ''
-    say ' You must make sure they are loaded into the asset pipeline, for example by'
-    say ' requiring them in application.js and application.css.'
+    say '  You must make sure they are loaded into the asset pipeline, for example by'
+    say '  requiring them in application.js and application.css.'
     say ''
   end
 
@@ -56,7 +56,8 @@ class SectionsGenerator < Rails::Generators::Base
     say ''
     
     # Ask the user.
-    return unless ['', 'y', 'yes'].include? ask('Do you want to create a sample section? [Yn]').downcase
+    return unless ['', 'y', 'yes'].include? ask('  Do you want to create a sample section? [Yn]').downcase
+    say ''
 
     # Create the sample section directory.
     empty_directory "app/sections/hello_world"
@@ -105,13 +106,13 @@ $(function() {
     END_STR
 
     say ''
-    say ' A sample section has been created in '
+    say '  I have created a sample section in '
     say 'app/sections/hello_world', Thor::Shell::Color::BOLD
-    say ' To use it, simply put '
+    say '  To use it, simply put '
     say '<%= section :hello_world %>', Thor::Shell::Color::BOLD
-    say ' into a view file.'
+    say '  into a view file.'
     say ''
-    say ' Happy coding! :)'
+    say '  Happy coding! :)'
     say ''
   end
 end
