@@ -2,7 +2,7 @@ class SectionsGenerator < Rails::Generators::Base
 
   def create_sections_folder
     say ''
-    say 'STEP 1: Creating sections folder'
+    say 'STEP 1: Creating sections folder', Thor::Shell::Color::BOLD
     say ''
     empty_directory "app/sections"
     inject_into_file 'config/application.rb',
@@ -17,7 +17,7 @@ class SectionsGenerator < Rails::Generators::Base
   
   def create_section_assets
     say ''
-    say 'STEP 2: Creating asset manifests.'
+    say 'STEP 2: Creating asset manifests.', Thor::Shell::Color::BOLD
     say ''
     create_file 'app/assets/javascripts/application_sections.js', <<-END_STR
 // THIS FILE IS AUTOMATICALLY CREATED BY THE SECTIONS PLUGIN
@@ -52,7 +52,7 @@ class SectionsGenerator < Rails::Generators::Base
 
   def create_sample_section
     say ''
-    say 'STEP 3: Creating a sample section.'
+    say 'STEP 3: Creating a sample section.', Thor::Shell::Color::BOLD
     say ''
     
     # Ask the user.
