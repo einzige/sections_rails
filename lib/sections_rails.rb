@@ -9,11 +9,12 @@ module SectionsRails
     # Add assets of section when in dev mode.
     if Rails.env != 'production'
       out << javascript_include_tag("#{name}/#{name}") if File.exists?("#{filename}.js") || File.exists?("#{filename}.js.coffee") || File.exists?("#{filename}.coffee")
-      out << stylesheet_link_tag("#{name}/#{name}") if File.exists?("#{filename}.css") || File.exists?("#{filename}.css.scss") || File.exists?("#{filename}.css.sass") || File.exists?("#{filename}.scss") || File.exists?("#{filename}.sass")
+      out << stylesheet_link_tag("#{name}/#{name}") if File.exists?("#{filename}.css") || File.exists?("#{filename}.css.scss") || File.exists?("#{filename}.css.sass") || File.exists?("#{filename}.scss") || File.exists?("#{filename}.sass") 
     end
 
     # Render the section partial into the view.
-    if File.exists? "#{Rails.root}/app/sections/#{name}/_#{name}.html.erb" 
+    filename = "#{Rails.root}/app/sections/#{name}/_#{name}.html"
+    if File.exists?("#{filename}.erb") || File.exists?("#{filename}.haml")
       out << render(:partial => "/../sections/#{name}/#{name}")
     else
       out << content_tag(:div, '', :class => name)
