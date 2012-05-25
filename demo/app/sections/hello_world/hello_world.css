@@ -5,5 +5,5 @@
  * in this case the ".hello" class.
  */
 
-.hello_world { width: 300px; padding: 0 2ex 2ex; border: 2px dotted red; background-color: yellow; }
+.hello_world { width: 350px; padding: 0 2ex 2ex; border: 2px dotted red; background-color: yellow; }
 .hello_world .h2 { font-size: 1em; margin: 0 0 1ex; padding: 0; }

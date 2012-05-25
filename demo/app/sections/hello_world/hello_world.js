@@ -5,6 +5,8 @@
  * i.e. the <div> with the class 'hello_world'.
  */
 
-$('.hello_world').click(function() {
-  alert('The Hello World section says hello to the world! :)');
+$(function() {
+  $('.hello_world').click(function() {
+    alert('The Hello World section says hello to the world!');
+  });
 });

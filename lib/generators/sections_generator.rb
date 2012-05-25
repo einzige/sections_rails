@@ -67,7 +67,11 @@ class SectionsGenerator < Rails::Generators::Base
 
 <div class="hello_world">
   <h2>Hello World!</h2>
-  This is content inside the hello world section!
+  This is content defined by the hello world section.<br>
+  It is styled by CSS from the section. <br>
+  <br>
+  Click on this section.<br>
+  The behavior comes from the section's JavaScript file.<br>
 </div>
     END_STR
 
@@ -80,7 +84,7 @@ class SectionsGenerator < Rails::Generators::Base
  * in this case the ".hello" class.
  */
 
-.hello_world { width: 300px; padding: 0 2ex 2ex; border: 2px dotted red; background-color: yellow; }
+.hello_world { width: 350px; padding: 0 2ex 2ex; border: 2px dotted red; background-color: yellow; }
 .hello_world .h2 { font-size: 1em; margin: 0 0 1ex; padding: 0; }
     END_STR
     
@@ -93,8 +97,10 @@ class SectionsGenerator < Rails::Generators::Base
  * i.e. the <div> with the class 'hello_world'.
  */
 
-$('.hello_world').click(function() {
-  alert('The Hello World section says hello to the world! :)');
+$(function() {
+  $('.hello_world').click(function() {
+    alert('The Hello World section says hello to the world!');
+  });
 });
     END_STR
 
