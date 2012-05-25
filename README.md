@@ -1,20 +1,16 @@
-Ruby on Rails provides an amazing infrastructure and conventions for well structured server-side code. 
-It falls, however, short for the view layer. 
-
-_Partials_ provide a nice way to represent the HTML code of individual sections within complex web pages, 
-but no such facilities are available for the corresponding CSS and JavaScript. 
-This leaves the task of organizing the JS and CSS completely up to the user.
-
-_Sections_rails_ fills this gap by adding infrastructure to the view layer of Ruby on Rails.
-It allows to define and use the HTML, CSS, and JavaScript code of dedicated 
-sections of pages together in one place.
+_Sections_rails_ adds a component-oriented infrastructure to the view layer of Ruby on Rails.
+This allows to define and use the HTML, CSS, and JavaScript code of dedicated 
+sections of web pages together in one place.
 
 
 # Example
 
-Let's assume a web page has amongst other things a navigation menu.
-This menu requires certain HTML, CSS, and JavaScript code that is specific to it.
-_Sections_rails_ allows to define this code as a _section_ inside the _/app_ folder:
+Let's take the navigation menu within a web site as an example section.
+It consists of certain HTML, CSS, and JavaScript code as well as image resources. 
+These assets must be loaded on every page that this navigation menu is visible on,
+and should be removed when the navigation menu is removed from the site.
+
+_Sections_rails_ allows to define these assets together, as a _section_ inside the _/app_ folder:
 
     /app/sections/menu/_menu.html.erb
                        menu.css
@@ -22,20 +18,28 @@ _Sections_rails_ allows to define this code as a _section_ inside the _/app_ fol
 
 To display this menu, simply do this in your view:
 
-    <%= section :menu %>
+```erb
+<%= section :menu %>
+```
 
-This inserts the partial as well as the JS and CSS files from _/app/sections/menu_ at this location.
+The _section_ helper inserts the partial as well as the JS and CSS files from _/app/sections/menu_ at this location.
+It does the right thing in all circumstances: In development mode, it inserts the individual assets. 
+In production mode, it inserts the assets to the main _application.js_ bundle.
 
 
 # Installation
 
 In your Gemfile:
 
-    gem 'sections_rails'
+```ruby
+gem 'sections_rails'
+```
 
 Then set up the directory structure:
 
-    $ rails generate sections
+```bash
+$ rails generate sections
+```
 
 The generator does the following things:
 
@@ -46,52 +50,37 @@ The generator does the following things:
 
         config.assets.paths << 'app/sections'
 
-3.  It optionally creates a demo section called _hello_world_.
+3.  It optionally creates a demo section called _hello_world_ that you can try out as described below.
+
+
+In it's current prototypical implementation, _Sections_rails_ also creates empty asset container files:
+__application_sections.js__ and __application_sections.css__.
+Make sure you require them from your main _application.js_ and _application.css_ files. 
+They are used only when running _rake assets:precompile_ during deployment, and should be checked in and stay the way they are. 
 
 
 # Usage
 
 To use the "hello_world" section created by the sections generator, simply add it to the view:
 
-    <%= section :hello_world %>
+```erb
+<%= section :hello_world %>
+```
 
 If your section renders itself completely in JavaScript, you can omit its partial file.
-In this case, the _sections_ command creates an empty div in the view.
+In this case, the _sections_ helper creates an empty div in the view.
 
-    <div class="hello_world"></div>
-
-
-## Asset precompilation
-
-_Sections_rails_ provides facilities to include the assets of sections in the global asset
-bundles for production mode.
-
-1.  Run __rake sections:prepare__
-    
-    This rake task creates helper files that tell the asset pipeline about the assets of the different sections.
-
-    * _/app/assets/javascripts/application_sections.js_ links to all JS files of all sections.
-    * _/app/assets/stylesheets/application_sections.js_ links to all CSS files of all sections.
-
-2.  Include the generated helper files into your _application.js_ and _application.css_ files.
-
-    In application.js:
-    
-        //= require application_sections
-
-    In application.css:
-    
-        /*= require application_sections */    
-
-3.  Run __rake assets:precompile__ as usual.
+```html
+<div class="hello_world"></div>
+```
 
 
 # Missing features
 
-_Sections_rails_ is in early development and far from complete. Missing features are:
+_Sections_rails_ is in prototypical development and far from complete. Missing features are:
 
-* Support for multiple assets, and assets per section
-* support for assets in different formats like CoffeeScript, Haml, Sass etc.
-* Support for page-specific compiled asset files instead of one global one
-* Better integration into the asset precompilation workflow.
-* Include serverside controller logic for sections by integrating with https://github.com/apotonick/cells or something comparable
+* Support for multiple application assets, for example page-specific compiled asset files instead of one global one.
+* Support for assets in different formats like CoffeeScript, Haml, Sass etc.
+* Support for serverside controller logic for sections, for example by integrating with https://github.com/apotonick/cells.
+* More natural asset pipeline support by extending Sprockets to parse section calls.
+
