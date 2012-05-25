@@ -1,3 +1,4 @@
+# Generates the file structure for the plugin in Rails.
 class SectionsGenerator < Rails::Generators::Base
 
   def create_sections_folder
