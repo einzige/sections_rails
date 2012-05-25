@@ -26,6 +26,9 @@ The _section_ helper inserts the partial as well as the JS and CSS files from _/
 It does the right thing in all circumstances: In development mode, it inserts the individual assets. 
 In production mode, it inserts the assets to the main _application.js_ bundle.
 
+The gem source comes with a bundled example Rails app in the _demo/_ directory. 
+It provides a working example of a section in action in _views/demos/index.html.erb_.
+
 
 # Installation
 
