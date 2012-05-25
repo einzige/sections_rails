@@ -2,6 +2,7 @@ namespace :sections do
 
   desc "Prepares the assets for precompilation in a setup with a single application.js file"
   task :prepare do
+    puts "\nPreparing sections assets ..."
 
     # Find all views in this app.
     views = find_all_views 'app/views'
@@ -37,13 +38,7 @@ namespace :sections do
       file.write "*/"
     end
     
-    # Make sure the require files are properly linked.
-    unless file_contains 'app/assets/javascripts/application.js', /application_sections/
-      puts "Please add the 'require' statement to 'application_sections.js' to 'application.js'."
-    end
-    unless file_contains 'app/assets/stylesheets/application.css', /application_sections/
-      puts "Please add the 'require' statement to 'application_sections.css' to 'application.css'."
-    end
+    puts "Preparing section assets done.\n\n"
   end
 
   desc "Prepares the assets for precompilation in a setup with multiple files per page."
@@ -74,6 +69,7 @@ namespace :sections do
       next if ['.', '..', 'layouts'].include? dir      
       Dir.entries(File.join(root, dir)).each do |view_file|
         next if ['.', '..'].include? view_file
+        next if view_file[-4..-1] == '.swp'
         result << File.join(dir, view_file)
       end
     end
@@ -91,7 +87,7 @@ namespace :sections do
   
   # Returns an array with the name of all sections in the given view source.
   def find_sections_in_view view_text
-    view_text.scan(/<%= section\s+['"](.*?)['"]\s*%>/).flatten.sort.uniq
+    view_text.scan(/<%=\s*section\s+['":](.*?)['"]?\s*%>/).flatten.sort.uniq
   end
   
   # Returns whether the given file contains the given text somewhere in its content.
@@ -100,3 +96,7 @@ namespace :sections do
   end
   
 end
+
+# Run the 'sections:prepare' rake task automatically before the 'assets:precompile' rake task
+# when the latter is called.
+Rake::Task['assets:precompile'].enhance ['sections:prepare']

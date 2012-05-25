@@ -1,6 +1,9 @@
 class SectionsGenerator < Rails::Generators::Base
 
   def create_sections_folder
+    say ''
+    say ' STEP 1: Creating sections folder'
+    say ''
     empty_directory "app/sections"
     inject_into_file 'config/application.rb',
                      "    config.assets.paths << 'app/sections'\n",
@@ -12,7 +15,45 @@ class SectionsGenerator < Rails::Generators::Base
     say ''
   end
   
+  def create_section_assets
+    say ''
+    say 'STEP 2: Creating asset manifests.'
+    say ''
+    create_file 'app/assets/javascripts/application_sections.js', <<-END_STR
+// THIS FILE IS AUTOMATICALLY CREATED BY THE SECTIONS PLUGIN
+// AND MUST BE LOADED BY YOUR PAGE.
+// PLEASE DO NOT MODIFY IT MANUALLY.
+//
+    END_STR
+
+    create_file 'app/assets/stylesheets/application_sections.css', <<-END_STR
+/*
+ * THIS FILE IS AUTOMATICALLY CREATED BY THE SECTIONS PLUGIN.
+ * AND MUST BE LOADED BY YOUR PAGE.
+ * PLEASE DO NOT MODIFY MANUALLY.
+ */
+    END_STR
+
+    say ''
+    say ' I have created two files to reference the assets from the sections.'
+    say ' * '
+    say 'app/assets/javascripts/application_sections.js', Thor::Shell::Color::BOLD
+    say ' * '
+    say 'app/assets/stylesheets/application_sections.css', Thor::Shell::Color::BOLD
+    say ''
+    say ' They should be checked into your code repository the way they are, and remain that way.'
+    say ' When running "rake assets:precompile" during deployment,'
+    say ' they will be updated with the actually used assets for proper operation in production mode.'
+    say ''
+    say ' You must make sure they are loaded into the asset pipeline, for example by'
+    say ' requiring them in application.js and application.css.'
+    say ''
+  end
+
   def create_sample_section
+    say ''
+    say 'STEP 3: Creating a sample section.'
+    say ''
     
     # Ask the user.
     return unless ['', 'y', 'yes'].include? ask('Do you want to create a sample section? [Yn]').downcase
@@ -59,10 +100,10 @@ $('.hello_world').click(function() {
 
     say ''
     say ' A sample section has been created in '
-    say 'app/sections/sample_section', Thor::Shell::Color::BOLD
+    say 'app/sections/hello_world', Thor::Shell::Color::BOLD
     say ' To use it, simply put '
-    say '<%= section :sample %>', Thor::Shell::Color::BOLD
-    say ' in your view file.'
+    say '<%= section :hello_world %>', Thor::Shell::Color::BOLD
+    say ' into a view file.'
     say ''
     say ' Happy coding! :)'
     say ''
