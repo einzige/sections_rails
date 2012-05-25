@@ -14,9 +14,6 @@ namespace :sections do
     
     # Create the require file for application.js.
     File.open "app/assets/javascripts/application_sections.js", 'w' do |file|
-      file.write "// THIS FILE IS AUTOMATICALLY CREATED BY THE SECTIONS PLUGIN.\n"
-      file.write "// PLEASE DO NOT MODIFY MANUALLY.\n"
-      file.write "//\n"
       sections.each do |section|
         if File.exists? "app/sections/#{section}/#{section}.js"
           file.write "//= require ../../sections/#{section}/#{section} \n"
@@ -27,15 +24,12 @@ namespace :sections do
     # Create the require file for application.css.
     File.open "app/assets/stylesheets/application_sections.css", 'w' do |file|
       file.write "/* \n"
-      file.write " * THIS FILE IS AUTOMATICALLY CREATED BY THE SECTIONS PLUGIN.\n"
-      file.write " * PLEASE DO NOT MODIFY MANUALLY.\n"
-      file.write " *\n"
       sections.each do |section|
         if File.exists? "app/sections/#{section}/#{section}.css"
           file.write " *= require ../../sections/#{section}/#{section}\n" 
         end
       end
-      file.write "*/"
+      file.write " */"
     end
     
     puts "Preparing section assets done.\n\n"
@@ -60,6 +54,33 @@ namespace :sections do
       next unless File.exists? "app/pages/#{view}.js"
     end
   end  
+
+  desc 'Creates empty asset containers'
+  task :reset_asset_containers do
+    puts "Cleaning up section asset containers."
+
+    # Clean up JS asset container.
+    File.open "app/assets/javascripts/application_sections.js", 'w' do |file|
+      file.write <<-END_STR
+// THIS FILE IS AUTOMATICALLY CREATED BY THE SECTIONS PLUGIN
+// AND MUST BE LOADED BY YOUR PAGE.
+// PLEASE DO NOT MODIFY IT MANUALLY.
+//
+      END_STR
+    end
+
+    # Clean up CSS asset container.
+    File.open "app/assets/stylesheets/application_sections.css", 'w' do |file|
+      file.write <<-END_STR
+/*
+ * THIS FILE IS AUTOMATICALLY CREATED BY THE SECTIONS PLUGIN.
+ * AND MUST BE LOADED BY YOUR PAGE.
+ * PLEASE DO NOT MODIFY MANUALLY.
+ */
+      END_STR
+    end
+  end
+
 
   # Returns an array with the file name of all views in the given directory.
   # Views are all files that end in .html.erb
@@ -99,4 +120,7 @@ end
 
 # Run the 'sections:prepare' rake task automatically before the 'assets:precompile' rake task
 # when the latter is called.
-Rake::Task['assets:precompile'].enhance ['sections:prepare']
+Rake::Task['assets:precompile'].enhance ['sections:prepare'] do
+  Rake::Task["sections:reset_asset_containers"].invoke
+end
+
