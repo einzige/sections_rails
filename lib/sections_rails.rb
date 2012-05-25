@@ -4,13 +4,20 @@ module SectionsRails
   
   def section name
     out = []
-    out << javascript_include_tag("#{name}/#{name}") if File.exists? "#{Rails.root}/app/sections/#{name}/#{name}.js"
-    out << stylesheet_link_tag("#{name}/#{name}") if File.exists? "#{Rails.root}/app/sections/#{name}/#{name}.css"
+
+    # Add assets of section when in dev mode.
+    if Rails.env != 'production'
+      out << javascript_include_tag("#{name}/#{name}") if File.exists? "#{Rails.root}/app/sections/#{name}/#{name}.js"
+      out << stylesheet_link_tag("#{name}/#{name}") if File.exists? "#{Rails.root}/app/sections/#{name}/#{name}.css"
+    end
+
+    # Render the section partial into the view.
     if File.exists? "#{Rails.root}/app/sections/#{name}/_#{name}.html.erb" 
       out << render(:partial => "/../sections/#{name}/#{name}")
     else
       out << "<div class=\"#{name}\"></div>"
     end
+
     out.join("\n").html_safe
   end
   
