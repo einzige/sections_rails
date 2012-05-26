@@ -31,10 +31,8 @@ class SectionGenerator < Rails::Generators::Base
   def split_path
     split_names = name.split '/'
     filename = split_names[-1]
-    directory = (split_names.size > 1 ? split_names[0..-2] : []).join '/'
+    directory = split_names[0..-2].join '/'
     directory += '/' if directory.size > 0
-    p directory
-    p filename
     [directory, filename]
   end
 

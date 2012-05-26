@@ -15,8 +15,9 @@ namespace :sections do
     # Create the require file for application.js.
     File.open "app/assets/javascripts/application_sections.js", 'w' do |file|
       sections.each do |section|
-        if File.exists? "app/sections/#{section}/#{section}.js"
-          file.write "//= require ../../sections/#{section}/#{section} \n"
+
+        if File.exists?(asset_path section, '.js') || File.exists?(asset_path section, '.js.coffee') || File.exists?(asset_path section, '.coffee')
+          file.write "//= require #{require_path section}\n"
         end
       end
     end
@@ -25,8 +26,8 @@ namespace :sections do
     File.open "app/assets/stylesheets/application_sections.css", 'w' do |file|
       file.write "/* \n"
       sections.each do |section|
-        if File.exists? "app/sections/#{section}/#{section}.css"
-          file.write " *= require ../../sections/#{section}/#{section}\n" 
+        if File.exists?(asset_path section, '.css') || File.exists?(asset_path section, '.css.scss') || File.exists?(asset_path section, '.css.sass') || File.exists?(asset_path section, '.scss') || File.exists?(asset_path section, '.sass')
+          file.write " *= require #{require_path section}\n"
         end
       end
       file.write " */"
@@ -91,7 +92,9 @@ namespace :sections do
       Dir.entries(File.join(root, dir)).each do |view_file|
         next if ['.', '..'].include? view_file
         next if view_file[-4..-1] == '.swp'
-        result << File.join(dir, view_file)
+        view_path = File.join(dir, view_file)
+        next if File.directory? "#{root}/#{view_path}"
+        result << view_path
       end
     end
     result
@@ -108,7 +111,9 @@ namespace :sections do
   
   # Returns an array with the name of all sections in the given view source.
   def find_sections_in_view view_text
-    view_text.scan(/<%=\s*section\s+['":](.*?)['"]?\s*%>/).flatten.sort.uniq
+    erb_sections = view_text.scan(/<%=\s*section\s+['":](.*?)['"]?\s*%>/).flatten.sort.uniq
+    haml_sections = view_text.scan(/\=\s*section\s+['":](.*?)['"]?$/).flatten.sort.uniq
+    erb_sections + haml_sections
   end
   
   # Returns whether the given file contains the given text somewhere in its content.
@@ -116,6 +121,23 @@ namespace :sections do
     IO.read(file_name) =~ text
   end
   
+  # Returns the path to the asset in the given section.
+  def asset_path section_name, asset_extension = nil, asset_prefix = nil
+    split_names = section_name.split '/'
+    filename = split_names[-1]
+    directory = split_names[0..-2].join '/'
+    directory += '/' if directory.size > 0
+    "app/sections/#{directory}#{filename}/#{asset_prefix}#{filename}#{asset_extension}"
+  end
+
+  # Returns the relative path to the asset for the asset pipeline.
+  def require_path section_name
+    split_names = section_name.split '/'
+    filename = split_names[-1]
+    directory = split_names[0..-2].join '/'
+    directory += '/' if directory.size > 0
+    "../../sections/#{directory}#{filename}/#{filename}"
+  end
 end
 
 # Run the 'sections:prepare' rake task automatically before the 'assets:precompile' rake task
