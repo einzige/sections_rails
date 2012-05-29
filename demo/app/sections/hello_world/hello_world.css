@@ -2,7 +2,7 @@
  * This file contains the CSS for the 'hello world' section. 
  *
  * Please note that all CSS in here should be relative to the container of the section,
- * in this case the ".hello" class.
+ * in this case the ".hello_world" class.
  */
 
 .hello_world { width: 350px; padding: 0 2ex 2ex; border: 2px dotted red; background-color: yellow; }
