@@ -1,11 +1,11 @@
 module SectionsRails
-  require "sections_rails/railtie" if defined?(Rails)
+  require "sections_rails/config"
 
   class Section
     attr_reader :asset_path, :directory, :filename, :global_path, :partial_path, :path # NOTE (SZ): not too many? :)
 
-    def has_asset? extensions
-      extensions.each do |ext|
+    def has_asset? *extensions
+      extensions.flatten.each do |ext|
         return true if File.exists?("#{self.global_path}.#{ext}")
       end
       false
@@ -24,16 +24,12 @@ module SectionsRails
     end
 
     def initialize combined_name
-      self.filename     = File.basename(combined_name)
-      self.directory    = File.dirname(combined_name)
-      self.path         = File.join(self.directory, self.filename)
-      self.asset_path   = File.join(self.path, self.filename)
-      self.global_path  = File.join(Rails.root, SectionsRails.config.path, self.path)
-      self.partial_path = File.join(self.directory, "_#{filename}")
-    end
-
-    def render
-      # ?
+      @filename     = File.basename(combined_name, '.*')
+      @directory    = File.dirname(combined_name)
+      @path         = File.join(self.directory, self.filename)
+      @asset_path   = File.join(self.path, self.filename)
+      @global_path  = File.join(Rails.root, SectionsRails.config.path, self.path)
+      @partial_path = File.join(self.directory, "_#{filename}")
     end
   end
 end

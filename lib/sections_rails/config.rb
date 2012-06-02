@@ -9,9 +9,9 @@ module SectionsRails
     attr_accessor :path, :js_extensions, :css_extensions, :partial_extensions
 
     def initialize options = {}
-      options.reverse_merge({ :path           => 'app/sections',
-                              :js_extensions  => ['js',  'js.coffee', 'coffee'],
-                              :css_extensions => ['css', 'css.scss', 'css.sass', 'sass', 'scss'] })
+      options.reverse_merge!({ :path           => 'app/sections',
+                               :js_extensions  => ['js',  'js.coffee', 'coffee'],
+                               :css_extensions => ['css', 'css.scss', 'css.sass', 'sass', 'scss'] })
 
       options.each do |option, value|
         if self.respond_to? option

@@ -1,7 +1,9 @@
-module SectionsRails
+require "sections_rails/section"
+require 'action_view'
 
+module SectionsRails
   require "sections_rails/railtie" if defined?(Rails)
-  
+
   def section combined_name
     section = SectionsRails::Section.new(combined_name)
 
@@ -17,12 +19,11 @@ module SectionsRails
     if section.has_template? # TODO: replace with template_exists?
       out << render(:partial => section.asset_path)
     else
-      out << content_tag(:div, '', :class => filename)
+      out << content_tag(:div, '', :class => section.filename)
     end
 
     out.join("\n").html_safe
   end
-  
 end
 
 ActionView::Base.send :include, SectionsRails
