@@ -41,12 +41,24 @@ module SectionsRails
 
     # Render the section partial into the view.
     partial_path = "#{directory_path}/_#{filename}.html"
-    if File.exists?("#{partial_path}.erb") || File.exists?("#{partial_path}.haml")
-      out << render(:partial => "/../sections/#{directory}#{filename}/#{filename}")
+    if options.has_key? :partial
+      if options[:partial] == :tag
+        # :partial => :tag given --> render the tag.
+        out << content_tag(:div, '', :class => filename)
+      elsif options[:partial]
+        # some value for :partial given --> render the given partial.
+        out << render(:partial => "/../sections/#{directory}#{filename}/#{filename}")
+      else
+        # :partial => false given --> render nothing
+      end
     else
-      out << content_tag(:div, '', :class => filename)
+      # No :partial option given --> render the file or tag per convention.
+      if File.exists?("#{partial_path}.erb") || File.exists?("#{partial_path}.haml")
+        out << render(:partial => "/../sections/#{directory}#{filename}/#{filename}")
+      else
+        out << content_tag(:div, '', :class => filename)
+      end
     end
-
     out.join("\n").html_safe
   end
   
