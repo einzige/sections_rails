@@ -47,14 +47,14 @@ module SectionsRails
         out << content_tag(:div, '', :class => filename)
       elsif options[:partial]
         # some value for :partial given --> render the given partial.
-        out << render(:partial => "/../sections/#{directory}#{filename}/#{filename}")
+        out << render(:partial => "/../sections/#{directory}#{filename}/#{filename}", :locals => options[:locals])
       else
-        # :partial => false given --> render nothing
+        # :partial => false or nil given --> render nothing
       end
     else
       # No :partial option given --> render the file or tag per convention.
       if File.exists?("#{partial_path}.erb") || File.exists?("#{partial_path}.haml")
-        out << render(:partial => "/../sections/#{directory}#{filename}/#{filename}")
+        out << render(:partial => "/../sections/#{directory}#{filename}/#{filename}", :locals => options[:locals])
       else
         out << content_tag(:div, '', :class => filename)
       end
