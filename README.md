@@ -97,12 +97,18 @@ In this case, the _sections_ helper creates an empty div in the view.
 ## Options
 
 By default, a section automatically includes partials, css, and js files with the section name if they exist. 
-This convention can be overridden by the options __:partial__, __:css__, and __:js__ the `section` command.
-Providing `false` disables the respective functionality, while a filename makes the section use the given file instead of the default one.
+This convention can be overridden. The following example renders the _hello_world_ section with a different partial, with no stylesheet,
+and it uses the custom _foobar.js_ instead of _hello_world.js_.
 
-The command ```erb <%= section :hello_world, css: false, js: 'foobar.js' %>``` renders the _hello_world_ section without styling and using
-_foobar.js_ instead of _hello_world.js_.
+```erb
+<%= section :hello_world, partial: 'hello_new', css: false, js: 'foobar.js' %>
+```
 
+It is also possible to provide parameters to the rendered partial.
+
+```erb
+<%= section :hello_world, locals: { message: 'Greetings!' } %>
+```
 
 ## Creating new sections.
 
