@@ -12,6 +12,16 @@ namespace :sections do
       find_sections_in_view IO.read "app/views/#{view}"
     end.flatten
     
+    i = 0
+    while i < sections.size
+      section = sections[i]
+      more_sections = find_sections_in_section section
+      puts "Found these sections in #{section}: #{more_sections}"
+      sections.concat more_sections
+      sections.uniq!
+      i += 1
+    end
+    
     # Create the require file for application.js.
     File.open "app/assets/javascripts/application_sections.js", 'w' do |file|
       sections.each do |section|
@@ -109,11 +119,34 @@ namespace :sections do
     result
   end
   
+  def find_sections_in_section section_name
+    puts "parsing section #{section_name}"
+    paths = section_name.split '/'
+    directory_name = paths[0..-2].join '/'
+    puts "directory: #{directory_name}"
+    directory_name += '/'
+    file_name = paths[-1]
+    puts "file name: #{file_name}"
+    section_content = IO.read "app/sections/#{directory_name}#{file_name}/_#{file_name}.html.haml"
+
+    result = section_content.scan(/\=\s*section\s+['":](.*?)['"]?$/).flatten.sort.uniq
+
+    # TODO (KG): fix this
+    puts "old sections: #{result}"
+    new_result = result.map {|s| puts "cleanup: #{s}" ; s.ends_with?("',") ? s[0..-3] : s }
+    puts "new_sections: #{new_result}"
+    new_result
+  end
+
   # Returns an array with the name of all sections in the given view source.
   def find_sections_in_view view_text
-    erb_sections = view_text.scan(/<%=\s*section\s+['":](.*?)['"]?\s*%>/).flatten.sort.uniq
-    haml_sections = view_text.scan(/\=\s*section\s+['":](.*?)['"]?$/).flatten.sort.uniq
-    erb_sections + haml_sections
+    erb_sections = view_text.scan(/<%=\s*section\s+['":]([^'",\s]+)%>/).flatten.sort.uniq
+    haml_sections = view_text.scan(/\=\s*section\s+['":]([^"',\s]+)/).flatten.sort.uniq
+    # TODO (KG): fix this
+    puts "old haml: #{haml_sections}"
+    new_haml = haml_sections.map {|s| puts "cleanup: #{s}" ; s.ends_with?("',") ? s[0..-3] : s }
+    puts "new_haml: #{new_haml}"
+    erb_sections + new_haml
   end
   
   # Returns whether the given file contains the given text somewhere in its content.

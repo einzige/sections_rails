@@ -47,7 +47,7 @@ module SectionsRails
         out << content_tag(:div, '', :class => filename)
       elsif options[:partial]
         # some value for :partial given --> render the given partial.
-        out << render(:partial => "/../sections/#{directory}#{filename}/#{filename}", :locals => options[:locals])
+        out << render(:partial => "/../sections/#{directory}#{filename}/#{options[:partial]}", :locals => options[:locals])
       else
         # :partial => false or nil given --> render nothing
       end
