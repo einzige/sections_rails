@@ -1,5 +1,6 @@
 module SectionsRails
   require "sections_rails/config"
+  require "action_view"
 
   class Section
     include ActionView::Helpers::AssetTagHelper

@@ -3,6 +3,7 @@ require 'bundler/setup'
 require 'rails'
 require 'rspec'
 require 'rspec-rails'
+require 'sections_rails'
 
 # Configure Rails Environment
 ENV["RAILS_ENV"] = "test"
