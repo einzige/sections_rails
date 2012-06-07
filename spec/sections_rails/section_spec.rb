@@ -2,56 +2,50 @@ require "spec_helper"
 
 # TODO(SZ): missing specs.
 describe SectionsRails::Section do
-  before(:each) { Rails.stub(:root).and_return('/rails/root/') }
+  before(:each) { Rails.stub(:root).and_return('/rails_root/') }
   subject { SectionsRails::Section.new 'folder/filename.ext' }
 
   describe 'initialize' do
-    its(:filename)     { should == 'filename' }
-    its(:directory)    { should == 'folder' }
-    its(:path)         { should == 'folder/filename' }
-    its(:asset_path)   { should == 'folder/filename/filename' }
-    its(:global_path)  { should == '/rails/root/app/sections/folder/filename' }
-    its(:partial_path) { should == 'folder/_filename' }
+    its(:filename)       { should == 'filename' }
+    its(:directory_name) { should == 'folder' }
+    its(:path)           { should == 'folder/filename' }
+    its(:asset_path)     { should == 'folder/filename/filename' }
+    its(:absolute_path)  { should == '/rails_root/app/sections/folder/filename' }
+    its(:partial_path)   { should == 'folder/_filename' }
   end
 
   describe "#has_asset?" do
-    let(:extensions) { ['erb', 'haml'] }
-    let(:ext) { 'erb' }
 
-    before(:each) do
-      File.should_receive(:exists?).with("#{subject.global_path}.#{ext}").and_return(file_exists)
+    it "tries filename variations with all given extensions" do
+      File.should_receive(:exists?).with("/rails_root/app/sections/folder/filename.one").and_return(false)
+      File.should_receive(:exists?).with("/rails_root/app/sections/folder/filename.two").and_return(false)
+
+      subject.has_asset? ['one', 'two']
     end
 
-    context "file exists" do
-      let(:file_exists) { true }
-
-      it("returns true") { subject.has_asset?(ext).should be_true }
-
-      context "for javascript assets" do
-        let(:ext) { 'js' }
-        its(:has_default_js_asset?) { should == true }
-      end
-
-      context "for stylesheet assets" do
-        let(:ext) { 'css' }
-        its(:has_default_style_asset?) { should == true }
-      end
+    it "returns false if the files don't exist" do
+      File.should_receive(:exists?).with("/rails_root/app/sections/folder/filename.one").and_return(false)
+      subject.has_asset?(['one']).should be_false
     end
 
-    context "file does not exist" do
-      let(:file_exists) { false }
+    it "returns true if one of the given extensions matches a file" do
+      File.should_receive(:exists?).with("/rails_root/app/sections/folder/filename.one").and_return(false)
+      File.should_receive(:exists?).with("/rails_root/app/sections/folder/filename.two").and_return(true)
+      subject.has_asset?(['one', 'two']).should be_true
+    end
+  end
 
-      it("returns false") { subject.has_asset?(ext).should be_false }
+  describe "#has_default_js_asset" do
+    it 'looks for all different types of JS file types' do
+      File.should_receive(:exists?).with("/rails_root/app/sections/folder/filename.js").and_return(false)
+      File.should_receive(:exists?).with("/rails_root/app/sections/folder/filename.coffee").and_return(false)
+      File.should_receive(:exists?).with("/rails_root/app/sections/folder/filename.js.coffee").and_return(false)
+      subject.has_default_js_asset?.should be_false
+    end
 
-      context "for javascript assets" do
-        let(:ext) { 'js' }
-        its(:has_default_js_asset?) { should == false }
-      end
-
-      context "for stylesheet assets" do
-        let(:ext) { 'css' }
-        its(:has_default_style_asset?) { should == false }
-      end
+    it 'returns TRUE if it JS file types' do
+      File.stub!(:exists?).and_return(true)
+      subject.has_default_js_asset?.should be_true
     end
   end
 end
