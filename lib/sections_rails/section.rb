@@ -1,5 +1,5 @@
 module SectionsRails
-  require "sections_rails/railtie" if defined?(Rails)
+  require "sections_rails/config"
 
   class Section
     include ActionView::Helpers::AssetTagHelper
@@ -8,8 +8,8 @@ module SectionsRails
     # TODO(KG): remove unnessessarry.
     attr_reader :asset_path, :css, :directory, :filename, :global_path, :js, :locals, :partial, :partial_path, :path # NOTE (SZ): too many? :)
 
-    def has_asset? extensions
-      extensions.each do |ext|
+    def has_asset? *extensions
+      extensions.flatten.each do |ext|
         return true if File.exists?("#{self.global_path}.#{ext}")
       end
       false
@@ -36,6 +36,7 @@ module SectionsRails
       self.locals       = options
     end
 
+    # TODO(SZ): missing specs.
     def render lookup_context
       result = []
 

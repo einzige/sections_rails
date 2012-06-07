@@ -1,6 +1,8 @@
 require 'rubygems'
 require 'bundler/setup'
+require 'rails'
 require 'rspec'
+require 'rspec-rails'
 
 # Configure Rails Environment
 ENV["RAILS_ENV"] = "test"
