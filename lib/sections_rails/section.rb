@@ -9,6 +9,23 @@ module SectionsRails
     # TODO(KG): remove unnessessary.
     attr_reader :asset_path, :css, :directory_name, :filename, :absolute_path, :js, :locals, :partial, :partial_path, :path # NOTE (SZ): too many? :)
 
+    def initialize section_name, options = {}
+
+      # Helpers for filenames.
+      @filename       = File.basename(section_name, '.*')
+      @directory_name = File.dirname(section_name)
+      @path           = File.join(@directory_name, @filename)
+      @asset_path     = File.join(@path, @filename)
+      @absolute_path  = File.join(Rails.root, SectionsRails.config.path, @path)
+      @partial_path   = File.join(@directory_name, "_#{filename}")
+
+      @js             = options[:js]
+      @css            = options[:css]
+      @partial        = options[:partial]
+      @locals         = options[:locals]
+    end
+
+
     def has_asset? *extensions
       extensions.flatten.each do |ext|
         return true if File.exists?("#{self.absolute_path}.#{ext}")
@@ -21,20 +38,7 @@ module SectionsRails
     end
 
     def has_default_style_asset?
-      has_asset?(SectionsRails.config.css_extensions)
-    end
-
-    def initialize combined_name, options = {}
-      @filename     = File.basename(combined_name, '.*')
-      @directory    = File.dirname(combined_name)
-      @path         = File.join(self.directory, self.filename)
-      @asset_path   = File.join(self.path, self.filename)
-      @global_path  = File.join(Rails.root, SectionsRails.config.path, self.path)
-      @partial_path = File.join(self.directory, "_#{filename}")
-      @js           = options.delete(:js)
-      @css          = options.delete(:css)
-      @partial      = options.delete(:partial)
-      @locals       = options
+      has_asset? SectionsRails.config.css_extensions
     end
 
     # TODO(SZ): missing specs.
