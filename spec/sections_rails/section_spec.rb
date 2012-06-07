@@ -29,12 +29,12 @@ describe SectionsRails::Section do
 
       context "for javascript assets" do
         let(:ext) { 'js' }
-        its(:has_js_asset?) { should == true }
+        its(:has_default_js_asset?) { should == true }
       end
 
       context "for stylesheet assets" do
         let(:ext) { 'css' }
-        its(:has_style_asset?) { should == true }
+        its(:has_default_style_asset?) { should == true }
       end
     end
 
@@ -45,12 +45,12 @@ describe SectionsRails::Section do
 
       context "for javascript assets" do
         let(:ext) { 'js' }
-        its(:has_js_asset?) { should == false }
+        its(:has_default_js_asset?) { should == false }
       end
 
       context "for stylesheet assets" do
         let(:ext) { 'css' }
-        its(:has_style_asset?) { should == false }
+        its(:has_default_style_asset?) { should == false }
       end
     end
   end

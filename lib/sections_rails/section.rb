@@ -25,23 +25,23 @@ module SectionsRails
     end
 
     def initialize combined_name, options = {}
-      self.filename     = File.basename(combined_name)
-      self.directory    = File.dirname(combined_name)
-      self.path         = File.join(self.directory, self.filename)
-      self.asset_path   = File.join(self.path, self.filename)
-      self.global_path  = File.join(Rails.root, SectionsRails.config.path, self.path)
-      self.partial_path = File.join(self.directory, "_#{filename}")
-      self.js           = options.delete(:js)
-      self.css          = options.delete(:css)
-      self.partial      = options.delete(:partial)
-      self.locals       = options
+      @filename     = File.basename(combined_name, '.*')
+      @directory    = File.dirname(combined_name)
+      @path         = File.join(self.directory, self.filename)
+      @asset_path   = File.join(self.path, self.filename)
+      @global_path  = File.join(Rails.root, SectionsRails.config.path, self.path)
+      @partial_path = File.join(self.directory, "_#{filename}")
+      @js           = options.delete(:js)
+      @css          = options.delete(:css)
+      @partial      = options.delete(:partial)
+      @locals       = options
     end
 
     # TODO(SZ): missing specs.
     def render lookup_context
       result = []
 
-      # Only for dev mode.
+      # Include assets only for development mode.
       if ( ! Rails.config.assets.compress)
 
         # Include JS assets.
