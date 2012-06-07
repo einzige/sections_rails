@@ -1,6 +1,8 @@
-_Sections_rails_ adds a component-oriented infrastructure to the view layer of Ruby on Rails.
-This allows to define and use the HTML, CSS, and JavaScript code of dedicated 
-sections of web pages together in one place.
+_SectionsRails_ adds a component-oriented infrastructure to the view layer of Ruby on Rails.
+
+In short, the DOM, styling, behavior, tests, and other data for dedicated pieces of a web page are defined together, in one directory,
+rather than spread across _app/views_, _app/assets/javascripts_, _app/assets/stylesheets_, and _spec/javascripts_.
+This makes it easier to work on those pieces, makes them more reusable, and large code bases more managable.
 
 
 # Example
@@ -10,24 +12,39 @@ It consists of certain HTML, CSS, and JavaScript code as well as image resources
 These assets must be loaded on every page that this navigation menu is visible on,
 and should be removed when the navigation menu is removed from the site.
 
+Traditionally, these files are defined in this directory structure:
+
+```
+/app/assets/javascripts/menu.js
+                       /templates/entry.jst.ejs
+           /stylesheets/menu.css
+    /views/shared/_menu.html.erb
+/doc/menu.md
+/spec/javascripts/menu_spec.js
+```
+
 _Sections_rails_ allows to define these assets together, as a _section_ inside the _/app_ folder:
 
-    /app/sections/menu/_menu.html.erb
-                       menu.css
-                       menu.js
+    /app/sections/menu/_menu.html.erb     # Server side template.
+                       menu.css           # Styling for the menu.
+                       menu.js            # Logic for the menu.
+                       readme.md          # Documentation.
+                       entry.jst.ejs      # Client-side template.
+                       menu_spec.coffee   # Unit test for logic of this template.
 
-To display this menu, simply do this in your view:
+To embed this menu and all its assets into a page, simply do this in your view:
 
 ```erb
 <%= section :menu %>
 ```
 
-The _section_ helper inserts the partial as well as the JS and CSS files from _/app/sections/menu_ at this location.
-It does the right thing in all circumstances: In development mode, it inserts the individual assets. 
-In production mode, it inserts the assets to the main _application.js_ bundle.
+This command inserts the partial as well as the JS and CSS files from _/app/sections/menu_ into the page.
+
+It does the right thing in all circumstances: In development mode it inserts the individual assets, 
+in production mode the assets are included into the precompilation targets.
 
 The gem source comes with a bundled example Rails app in the _demo/_ directory. 
-It provides a working example of a section in action in _views/demos/index.html.erb_.
+It provides several working examples of sections in action in _views/demos/index.html.erb_.
 
 
 # Installation
@@ -77,13 +94,65 @@ In this case, the _sections_ helper creates an empty div in the view.
 <div class="hello_world"></div>
 ```
 
+## Options
+
+By default, a section automatically includes partials, css, and js files with the section name if they exist. 
+This convention can be overridden. The following example renders the _hello_world_ section with a different partial, with no stylesheet,
+and it uses the custom _foobar.js_ instead of _hello_world.js_.
+
+```erb
+<%= section :hello_world, partial: 'hello_new', css: false, js: 'foobar.js' %>
+```
+
+It is also possible to provide parameters to the rendered partial.
+
+```erb
+<%= section :hello_world, locals: { message: 'Greetings!' } %>
+```
+
+## Creating new sections.
+
+To create a new section, simply create a new folder under _/app/sections_ and add the partials, css, js, jst, and test files for this section.
+Alternatively, run the provided generator:
+
+```bash
+$ rails generate section admin/chart
+```
+
+This creates a folder _/app/sections/admin/chart_ with a scaffold for a new section.
+
+
+# Unit tests for sections
+
+Sections should also contain unit test files for the section.
+
+## Unit testing using Konacha
+
+_This feature is still under development._
+
+To test them for example using [Konacha](https://github.com/jfirebaugh/konacha), create a symlink to _app/sections_ in _spec/javascript_.
+
+
+# Development
+
+## Unit tests
+
+```bash
+$ rake
+```
+
+To automatically run unit tests when files change, run
+
+```bash
+$ bundle exec guard -c
+```
 
 # Missing features
 
 _Sections_rails_ is in prototypical development and far from complete. Missing features are:
 
+* Better support for unit testing.
 * Support for multiple application assets, for example page-specific compiled asset files instead of one global one.
-* Support for assets in different formats like CoffeeScript, Haml, Sass etc.
 * Support for serverside controller logic for sections, for example by integrating with https://github.com/apotonick/cells.
 * More natural integration into the asset pipeline.
 
