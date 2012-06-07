@@ -51,6 +51,8 @@ module SectionsRails
         # Include JS assets.
         if js
           result << javascript_include_tag(File.join(path, js))
+        elsif js == false
+          # ":js => false" given --> don't include any JS.
         elsif has_default_js_asset?
           result << javascript_include_tag(asset_path)
         end
@@ -58,6 +60,8 @@ module SectionsRails
         # Include CSS assets.
         if css
           result << stylesheet_link_tag(File.join(path, css))
+        elsif css == false
+          # ":css => false" given --> don't include any CSS.
         elsif has_default_style_asset?
           result << stylesheet_link_tag(asset_path)
         end
