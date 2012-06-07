@@ -1,7 +1,9 @@
 require 'spec_helper'
-require 'sections_rails/string_tools'
+require 'sections_rails/helpers'
 
-describe 'string_tools' do
+include SectionsRails::Helpers
+
+describe SectionsRails::Helpers do
 
   describe 'find_sections' do
     it 'finds ERB sections with symbols' do
@@ -56,7 +58,7 @@ describe 'string_tools' do
   describe 'split_path' do
     it 'returns the directory and filename of the given path' do
       directory, filename = split_path '/one/two/three.js'
-      directory.should == '/one/two/'
+      directory.should == '/one/two'
       filename.should == 'three.js'
     end
 

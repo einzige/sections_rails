@@ -18,7 +18,10 @@ module SectionsRails
     #
     # @return [ Array<String, String> ]
     def split_path paths
-      [File.dirname(paths), File.basename(paths)]
+      dirname = File.dirname(paths)
+      dirname = '' if dirname == '.'
+
+      [dirname, File.basename(paths)]
     end
   end
 end
