@@ -6,18 +6,18 @@ module SectionsRails
     include ActionView::Helpers::AssetTagHelper
     include ActionView::Helpers::RenderingHelper
 
-    # TODO(KG): remove unnessessarry.
-    attr_reader :asset_path, :css, :directory, :filename, :global_path, :js, :locals, :partial, :partial_path, :path # NOTE (SZ): too many? :)
+    # TODO(KG): remove unnessessary.
+    attr_reader :asset_path, :css, :directory_name, :filename, :absolute_path, :js, :locals, :partial, :partial_path, :path # NOTE (SZ): too many? :)
 
     def has_asset? *extensions
       extensions.flatten.each do |ext|
-        return true if File.exists?("#{self.global_path}.#{ext}")
+        return true if File.exists?("#{self.absolute_path}.#{ext}")
       end
       false
     end
 
     def has_default_js_asset?
-      has_asset?(SectionsRails.config.js_extensions)
+      has_asset? SectionsRails.config.js_extensions
     end
 
     def has_default_style_asset?
@@ -42,7 +42,7 @@ module SectionsRails
       result = []
 
       # Include assets only for development mode.
-      if ( ! Rails.config.assets.compress)
+      if (! Rails.config.assets.compress)
 
         # Include JS assets.
         if js
