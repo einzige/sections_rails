@@ -133,6 +133,20 @@ _This feature is still under development._
 To test them for example using [Konacha](https://github.com/jfirebaugh/konacha), create a symlink to _app/sections_ in _spec/javascript_.
 
 
+# Development
+
+## Unit tests
+
+```bash
+$ rake
+```
+
+To automatically run unit tests when files change, run
+
+```bash
+$ bundle exec guard -c
+```
+
 # Missing features
 
 _Sections_rails_ is in prototypical development and far from complete. Missing features are:

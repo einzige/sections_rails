@@ -1,14 +1,10 @@
 require 'rubygems'
 require 'bundler/setup'
-#require "lib/sections_rails"
 require 'rspec'
 
 # Configure Rails Environment
 ENV["RAILS_ENV"] = "test"
 #Rails = Hashie::Mash.new({:env => 'test'})
-
-require 'sections_rails' # and any other gems you need
-
 
 # Load support files
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
