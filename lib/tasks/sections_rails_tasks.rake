@@ -4,28 +4,26 @@ namespace :sections do
   task :prepare do
     puts "\nPreparing sections assets ..."
 
-    # Find all views in this app.
-    views = find_all_views 'app/views'
-    
-    # Get all sections used in the views.
-    sections = views.map do |view|
-      find_sections_in_view IO.read "app/views/#{view}"
+    # Find all sections used in the views.
+    sections = find_all_views('app/views').map do |view|
+      find_sections IO.read"app/views/#{view}"
     end.flatten
     
+    # Find all sections within the already known sections.
     i = 0
     while i < sections.size
       section = sections[i]
-      more_sections = find_sections_in_section section
-      puts "Found these sections in #{section}: #{more_sections}"
-      sections.concat more_sections
-      sections.uniq!
+      referenced_sections = find_sections_in_section section
+      referenced_sections.each do |referenced_section|
+        sections << referenced_section unless sections.include? referenced_section
+      end
       i += 1
     end
+    sections.sort!
     
     # Create the require file for application.js.
     File.open "app/assets/javascripts/application_sections.js", 'w' do |file|
       sections.each do |section|
-
         if File.exists?(asset_path section, '.js') || File.exists?(asset_path section, '.js.coffee') || File.exists?(asset_path section, '.coffee')
           file.write "//= require #{require_path section}\n"
         end
@@ -110,65 +108,32 @@ namespace :sections do
     result
   end
 
+  # Used for :prepare_pages. Not used right now.
   def parse_views views
     result = {}
     views_to_parse.each do |view_to_parse|
       view_text = IO.read(File.join root, view_to_parse)
-      result[view_to_parse] = find_sections_in_view view_text
+      result[view_to_parse] = find_sections_in_text view_text
     end
     result
   end
   
+
   def find_sections_in_section section_name
-    puts "parsing section #{section_name}"
-    paths = section_name.split '/'
-    directory_name = paths[0..-2].join '/'
-    puts "directory: #{directory_name}"
-    directory_name += '/'
-    file_name = paths[-1]
-    puts "file name: #{file_name}"
-    section_content = IO.read "app/sections/#{directory_name}#{file_name}/_#{file_name}.html.haml"
-
-    result = section_content.scan(/\=\s*section\s+['":](.*?)['"]?$/).flatten.sort.uniq
-
-    # TODO (KG): fix this
-    puts "old sections: #{result}"
-    new_result = result.map {|s| puts "cleanup: #{s}" ; s.ends_with?("',") ? s[0..-3] : s }
-    puts "new_sections: #{new_result}"
-    new_result
+    directory, filename = split_path section_name
+    section_content = IO.read "app/sections/#{directory}#{filename}/_#{filename}.html.haml"
+    find_sections section_content
   end
 
-  # Returns an array with the name of all sections in the given view source.
-  def find_sections_in_view view_text
-    erb_sections = view_text.scan(/<%=\s*section\s+['":]([^'",\s]+)%>/).flatten.sort.uniq
-    haml_sections = view_text.scan(/\=\s*section\s+['":]([^"',\s]+)/).flatten.sort.uniq
-    # TODO (KG): fix this
-    puts "old haml: #{haml_sections}"
-    new_haml = haml_sections.map {|s| puts "cleanup: #{s}" ; s.ends_with?("',") ? s[0..-3] : s }
-    puts "new_haml: #{new_haml}"
-    erb_sections + new_haml
-  end
-  
-  # Returns whether the given file contains the given text somewhere in its content.
-  def file_contains file_name, text
-    IO.read(file_name) =~ text
-  end
-  
   # Returns the path to the asset in the given section.
   def asset_path section_name, asset_extension = nil, asset_prefix = nil
-    split_names = section_name.split '/'
-    filename = split_names[-1]
-    directory = split_names[0..-2].join '/'
-    directory += '/' if directory.size > 0
+    directory, filename = split_path section_name
     "app/sections/#{directory}#{filename}/#{asset_prefix}#{filename}#{asset_extension}"
   end
 
   # Returns the relative path to the asset for the asset pipeline.
   def require_path section_name
-    split_names = section_name.split '/'
-    filename = split_names[-1]
-    directory = split_names[0..-2].join '/'
-    directory += '/' if directory.size > 0
+    directory, filename = split_path section_name
     "../../sections/#{directory}#{filename}/#{filename}"
   end
 end
