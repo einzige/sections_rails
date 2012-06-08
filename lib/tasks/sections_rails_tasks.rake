@@ -121,9 +121,13 @@ namespace :sections do
   
 
   def find_sections_in_section section_name
-    directory, filename = split_path section_name
-    section_content = IO.read "app/sections/#{directory}#{filename}/_#{filename}.html.haml"
-    find_sections section_content
+    section = SectionsRails::Section.new section_name
+    partial_path = section.find_partial_filename
+    if partial_path
+      find_sections IO.read partial_path
+    else
+      []
+    end
   end
 
   # Returns the path to the asset in the given section.

@@ -9,7 +9,7 @@ module SectionsRails
     # TODO(KG): remove unnessessary.
     attr_reader :asset_path, :css, :directory_name, :filename, :absolute_asset_path, :js, :locals, :partial, :partial_path, :path # NOTE (SZ): too many? :)
 
-    def initialize section_name, rails_obj, options = {}
+    def initialize section_name, rails_obj = nil, options = {}
       section_name = section_name.to_s
 
       # Helpers for filenames.
@@ -29,6 +29,20 @@ module SectionsRails
       # For running view helper methods.
       @rails_obj = rails_obj
     end
+
+    def find_existing_filename basename, extensions
+      extensions.each do |ext|
+        path = "#{@absolute_asset_path}.#{ext}"
+        return path if File.exists? path
+      end
+      nil
+    end
+
+    # Returns the filename of the partial of this section, or nil if this section has no partial.
+    def find_partial_filename
+      find_existing_filename @partial_path, SectionsRails.config.partial_extensions
+    end
+
 
     def has_asset? *extensions
       extensions.flatten.each do |ext|

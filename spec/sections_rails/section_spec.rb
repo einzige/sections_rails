@@ -11,7 +11,25 @@ describe SectionsRails::Section do
     its(:asset_path)     { should == 'folder/section/section' }
     its(:absolute_path)  { should == '/rails_root/app/sections/folder/section/section' }
     its(:partial_path)   { should == '/rails_root/app/sections/folder/section/_section' }
+  describe 'find_partial_filename' do
+    it 'looks for all known types of partials' do
+      File.should_receive(:exists?).with("/rails_root/app/sections/folder/section/section.html.erb").and_return(false)
+      File.should_receive(:exists?).with("/rails_root/app/sections/folder/section/section.html.haml").and_return(false)
+      subject.find_partial_filename
+    end
+
+    it "returns nil if it doesn't find any assets" do
+      File.should_receive(:exists?).with("/rails_root/app/sections/folder/section/section.html.erb").and_return(false)
+      File.should_receive(:exists?).with("/rails_root/app/sections/folder/section/section.html.haml").and_return(false)
+      subject.find_partial_filename.should be_false
+    end
+
+    it "returns the absolute path to the asset if it finds one" do
+      File.stub(:exists?).and_return(true)
+      subject.find_partial_filename.should == '/rails_root/app/sections/folder/section/section.html.erb'
+    end
   end
+
 
   describe "#has_asset?" do
 
