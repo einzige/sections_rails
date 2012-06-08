@@ -24,15 +24,8 @@ module SectionsRails
       @view = view
     end
 
-    def find_existing_filename basename, extensions
-      extensions.each do |ext|
-        path = "#{basename}.#{ext}"
-        return path if File.exists? path
-      end
-      nil
-    end
-
     # Returns the asset_path of asset with the given extensions.
+    # Helper method.
     def find_asset_path asset_option, extensions
       return nil if asset_option == false
       return asset_option if asset_option
@@ -51,6 +44,15 @@ module SectionsRails
     # Returns the path to the JS asset of this section, or nil if the section doesn't have one.
     def find_js_asset_path
       find_asset_path @js, SectionsRails.config.js_extensions
+    end
+
+    # Returns the filename of the partial of this section, or nil if this section has no partial.
+    def find_partial_filename
+      SectionsRails.config.partial_extensions.each do |ext|
+        path = File.join SectionsRails.config.path, "#{@partial_path}.#{ext}"
+        return path if File.exists? path
+      end
+      nil
     end
 
     # TODO: replace this with find_asset.

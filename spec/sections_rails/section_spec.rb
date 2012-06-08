@@ -57,6 +57,28 @@ describe SectionsRails::Section do
     end
   end
 
+
+  describe 'find_partial_filename' do
+
+    it 'looks for all known types of partials' do
+      File.should_receive(:exists?).with("app/sections/folder/section/_section.html.erb").and_return(false)
+      File.should_receive(:exists?).with("app/sections/folder/section/_section.html.haml").and_return(false)
+      subject.find_partial_filename
+    end
+
+    it "returns nil if it doesn't find any assets" do
+      File.should_receive(:exists?).with("app/sections/folder/section/_section.html.erb").and_return(false)
+      File.should_receive(:exists?).with("app/sections/folder/section/_section.html.haml").and_return(false)
+      subject.find_partial_filename.should be_false
+    end
+
+    it "returns the absolute path to the asset if it finds one" do
+      File.stub(:exists?).and_return(true)
+      subject.find_partial_filename.should == 'app/sections/folder/section/_section.html.erb'
+    end
+  end
+
+
   describe "#has_asset?" do
 
     it "tries filename variations with all given extensions" do
