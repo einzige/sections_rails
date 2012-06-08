@@ -9,26 +9,28 @@ module SectionsRails
     # TODO(KG): remove unnessessary.
     attr_reader :asset_path, :css, :directory_name, :filename, :absolute_path, :js, :locals, :partial, :partial_path, :path # NOTE (SZ): too many? :)
 
-    def initialize section_name, options = {}
+    def initialize section_name, rails_obj, options = {}
 
       # Helpers for filenames.
       @filename       = File.basename(section_name, '.*')
       @directory_name = File.dirname(section_name)
-      @path           = File.join(@directory_name, @filename)
-      @asset_path     = File.join(@path, @filename)
-      @absolute_path  = File.join(Rails.root, SectionsRails.config.path, @path)
-      @partial_path   = File.join(@directory_name, "_#{filename}")
+      @asset_path     = File.join(@directory_name, @filename, @filename)
+      @absolute_path  = File.join(Rails.root, SectionsRails.config.path, @directory_name, @filename, @filename)
+      @partial_path   = File.join(Rails.root, SectionsRails.config.path, @directory_name, @filename, "_#{@filename}")
 
+      # Options.
       @js             = options[:js]
       @css            = options[:css]
       @partial        = options[:partial]
       @locals         = options[:locals]
-    end
 
+      # For running view helper methods.
+      @rails_obj = rails_obj
+    end
 
     def has_asset? *extensions
       extensions.flatten.each do |ext|
-        return true if File.exists?("#{self.absolute_path}.#{ext}")
+        return true if File.exists?("#{@absolute_path}.#{ext}")
       end
       false
     end
@@ -41,36 +43,44 @@ module SectionsRails
       has_asset? SectionsRails.config.css_extensions
     end
 
+    # Returns whether this section has a template.
+    def has_template?
+      SectionsRails.config.partial_extensions.each do |ext|
+        return true if File.exists?("#{@partial_path}.#{ext}")
+      end
+      false
+    end
+
     # TODO(SZ): missing specs.
-    def render lookup_context
+    def render
       result = []
 
       # Include assets only for development mode.
-      if (! Rails.config.assets.compress)
+      if Rails.env != 'production'
 
         # Include JS assets.
         if js
-          result << javascript_include_tag(File.join(path, js))
+          result << @rails_obj.javascript_include_tag(File.join(path, js))
         elsif js == false
           # ":js => false" given --> don't include any JS.
         elsif has_default_js_asset?
-          result << javascript_include_tag(asset_path)
+          result << @rails_obj.javascript_include_tag(asset_path)
         end
 
         # Include CSS assets.
         if css
-          result << stylesheet_link_tag(File.join(path, css))
+          result << @rails_obj.stylesheet_link_tag(File.join(path, css))
         elsif css == false
           # ":css => false" given --> don't include any CSS.
         elsif has_default_style_asset?
-          result << stylesheet_link_tag(asset_path)
+          result << @rails_obj.stylesheet_link_tag(@asset_path)
         end
       end
 
       # Render the section partial into the view.
       case partial
         when :tag
-          result << content_tag(:div, '', :class => filename)
+          result << @rails_obj.content_tag(:div, '', :class => filename)
 
         when false
           # partial: false given --> render nothing
@@ -78,16 +88,16 @@ module SectionsRails
         when nil
           # partial: nil given --> render default partial
 
-          if lookup_context.template_exists?(partial_path)
-            result << render(asset_path, locals)
+          if self.has_template?
+            result << @rails_obj.render(:partial => asset_path, :locals => locals)
           else
-            result << content_tag(:div, '', :class => filename)
+            result << @rails_obj.content_tag(:div, '', :class => filename)
           end
 
         else
           # partial: custom path given --> render custom partial
 
-          result << render("#{path}/#{partial}", locals)
+          result << @rails_obj.render("#{path}/#{partial}", locals)
       end
 
       result.join("\n").html_safe
