@@ -1,4 +1,13 @@
+# Configuration options for SectionsRails.
+# Set in an initializer file in /config/initializers/.
+#
+# Example:
+# SectionsRails.configure do |config|
+#   config.spec_dir  = "spec/javascripts"
+#   config.driver    = :webkit
+# end if defined?(Konacha)
 module SectionsRails
+
   class << self
     def config
       @config ||= Config.new
