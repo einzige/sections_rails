@@ -7,17 +7,18 @@ module SectionsRails
     include ActionView::Helpers::RenderingHelper
 
     # TODO(KG): remove unnessessary.
-    attr_reader :asset_path, :css, :directory_name, :filename, :absolute_path, :js, :locals, :partial, :partial_path, :path # NOTE (SZ): too many? :)
+    attr_reader :asset_path, :css, :directory_name, :filename, :absolute_asset_path, :js, :locals, :partial, :partial_path, :path # NOTE (SZ): too many? :)
 
     def initialize section_name, rails_obj, options = {}
       section_name = section_name.to_s
 
       # Helpers for filenames.
-      @filename       = File.basename(section_name, '.*')
-      @directory_name = File.dirname(section_name)
-      @asset_path     = File.join(@directory_name, @filename, @filename)
-      @absolute_path  = File.join(Rails.root, SectionsRails.config.path, @directory_name, @filename, @filename)
-      @partial_path   = File.join(Rails.root, SectionsRails.config.path, @directory_name, @filename, "_#{@filename}")
+      @filename       = File.basename section_name, '.*'
+      @directory_name = File.dirname section_name
+      @directory_name = '' if @directory_name == '.'
+      @asset_path     = @directory_name != '' ? File.join(@directory_name, @filename, @filename) : File.join(@filename, @filename)
+      @absolute_asset_path  = File.join Rails.root, SectionsRails.config.path, @asset_path
+      @partial_path   = File.join Rails.root, SectionsRails.config.path, @directory_name, @filename, "_#{@filename}"
 
       # Options.
       @js             = options[:js]
@@ -31,7 +32,7 @@ module SectionsRails
 
     def has_asset? *extensions
       extensions.flatten.each do |ext|
-        return true if File.exists?("#{@absolute_path}.#{ext}")
+        return true if File.exists?("#{@absolute_asset_path}.#{ext}")
       end
       false
     end
@@ -45,7 +46,7 @@ module SectionsRails
     end
 
     # Returns whether this section has a template.
-    def has_template?
+    def has_partial?
       SectionsRails.config.partial_extensions.each do |ext|
         return true if File.exists?("#{@partial_path}.#{ext}")
       end
@@ -89,7 +90,7 @@ module SectionsRails
         when nil
           # partial: nil given --> render default partial
 
-          if self.has_template?
+          if self.has_partial?
             result << @rails_obj.render(:partial => asset_path, :locals => locals)
           else
             result << @rails_obj.content_tag(:div, '', :class => filename)

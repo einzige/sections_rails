@@ -3,7 +3,7 @@ namespace :sections do
 
   desc "Prepares the assets for precompilation in a setup with a single application.js file"
   task :prepare do
-    puts "\nPreparing sections assets ..."
+    print "\nPreparing sections assets ..." ; STDOUT.flush
 
     # Find all sections used in the views.
     sections = find_all_views('app/views').map do |view|
@@ -33,7 +33,7 @@ namespace :sections do
     
     # Create the require file for application.css.
     File.open "app/assets/stylesheets/application_sections.css", 'w' do |file|
-      file.write "/* \n"
+      file.write "/*\n"
       sections.each do |section|
         if File.exists?(asset_path section, '.css') || File.exists?(asset_path section, '.css.scss') || File.exists?(asset_path section, '.css.sass') || File.exists?(asset_path section, '.scss') || File.exists?(asset_path section, '.sass')
           file.write " *= require #{require_path section}\n"
@@ -42,7 +42,7 @@ namespace :sections do
       file.write " */"
     end
     
-    puts "Preparing section assets done.\n\n"
+    puts " done.\n\n"
   end
 
   desc "Prepares the assets for precompilation in a setup with multiple files per page."

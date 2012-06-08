@@ -25,5 +25,6 @@ module SectionsRails
       dirname = '' if dirname == '.'
       [dirname, File.basename(paths)]
     end
+
   end
 end
