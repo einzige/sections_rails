@@ -44,6 +44,7 @@ module SectionsRails
     end
 
 
+    # TODO: replace this with find_asset.
     def has_asset? *extensions
       extensions.flatten.each do |ext|
         return true if File.exists?("#{@absolute_asset_path}.#{ext}")
@@ -51,15 +52,18 @@ module SectionsRails
       false
     end
 
+    # TODO: replace this with find_asset.
     def has_default_js_asset?
       has_asset? SectionsRails.config.js_extensions
     end
 
+    # TODO: replace this with find_asset.
     def has_default_style_asset?
       has_asset? SectionsRails.config.css_extensions
     end
 
     # Returns whether this section has a template.
+    # Deprecated.
     def has_partial?
       SectionsRails.config.partial_extensions.each do |ext|
         return true if File.exists?("#{@partial_path}.#{ext}")
