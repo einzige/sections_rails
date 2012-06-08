@@ -6,11 +6,25 @@ describe SectionsRails::Section do
   subject { SectionsRails::Section.new 'folder/section', nil }
 
   describe 'initialize' do
-    its(:filename)       { should == 'section' }
-    its(:directory_name) { should == 'folder' }
-    its(:asset_path)     { should == 'folder/section/section' }
-    its(:absolute_path)  { should == '/rails_root/app/sections/folder/section/section' }
-    its(:partial_path)   { should == '/rails_root/app/sections/folder/section/_section' }
+
+    context 'with section in folder' do
+      its(:filename)       { should == 'section' }
+      its(:directory_name) { should == 'folder' }
+      its(:asset_path)     { should == 'folder/section/section' }
+      its(:absolute_asset_path)  { should == '/rails_root/app/sections/folder/section/section' }
+      its(:partial_path)   { should == '/rails_root/app/sections/folder/section/_section' }
+    end
+
+    context 'without folder' do
+      subject { SectionsRails::Section.new 'section', nil }
+      its(:filename)       { should == 'section' }
+      its(:directory_name) { should == '' }
+      its(:asset_path)     { should == 'section/section' }
+      its(:absolute_asset_path)  { should == '/rails_root/app/sections/section/section' }
+      its(:partial_path)   { should == '/rails_root/app/sections/section/_section' }
+    end
+  end
+
   describe 'find_partial_filename' do
     it 'looks for all known types of partials' do
       File.should_receive(:exists?).with("/rails_root/app/sections/folder/section/section.html.erb").and_return(false)
