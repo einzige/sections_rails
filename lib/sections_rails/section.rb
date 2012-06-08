@@ -10,6 +10,7 @@ module SectionsRails
     attr_reader :asset_path, :css, :directory_name, :filename, :absolute_path, :js, :locals, :partial, :partial_path, :path # NOTE (SZ): too many? :)
 
     def initialize section_name, rails_obj, options = {}
+      section_name = section_name.to_s
 
       # Helpers for filenames.
       @filename       = File.basename(section_name, '.*')
