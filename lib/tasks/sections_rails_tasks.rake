@@ -36,8 +36,8 @@ namespace :sections do
       file.write "/*\n"
       sections.each do |section_name|
         section = SectionsRails::Section.new section_name
-        js_asset = section.find_js_asset_path
-        file.write "//= require #{js_asset}\n" if js_asset
+        js_asset = section.find_css_asset_path
+        file.write "*= require #{js_asset}\n" if js_asset
       end
       file.write " */"
     end
