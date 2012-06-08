@@ -3,7 +3,7 @@ require "spec_helper"
 # TODO(SZ): missing specs.
 describe SectionsRails::Section do
   before(:each) { Rails.stub(:root).and_return('/rails_root/') }
-  subject { SectionsRails::Section.new 'folder/section' }
+  subject { SectionsRails::Section.new 'folder/section', nil }
 
   describe 'initialize' do
     its(:filename)       { should == 'section' }
