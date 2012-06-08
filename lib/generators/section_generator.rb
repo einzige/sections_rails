@@ -32,7 +32,7 @@ class SectionGenerator < Rails::Generators::Base
   def directory_path
     @directory_path ||= begin
       directory, filename = split_path(name)
-      "app/sections/#{directory}/#{filename}"
+      File.join 'app/sections', directory, filename
     end
   end
 
