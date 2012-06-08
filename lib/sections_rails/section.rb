@@ -24,31 +24,31 @@ module SectionsRails
     # Path of the folder on the file system.
     # Example: 'app/sections/folder/section'
     def folder_filepath
-      File.join SectionsRails.config.path, @directory_name, @filename
+      @folder_filepath ||= File.join SectionsRails.config.path, @directory_name, @filename
     end
 
     # Path to access assets on the file system.
     # Includes only the base name of assets, without extensions.
     # Example: 'app/sections/folder/section/section'
     def asset_filepath
-      File.join SectionsRails.config.path, asset_includepath
+      @asset_filepath ||= File.join SectionsRails.config.path, asset_includepath
     end
 
     # Path for including assets into the web page.
     #
     def asset_includepath
-      File.join(@directory_name, @filename, @filename).gsub(/^\//, '')
+      @asset_includepath ||= File.join(@directory_name, @filename, @filename).gsub(/^\//, '')
     end
 
     # The path for accessing the partial on the filesystem.
     # Example: '
     def partial_filepath
-      File.join SectionsRails.config.path, partial_includepath
+      @asset_filepath ||= File.join SectionsRails.config.path, partial_includepath
     end
 
     # For including the partial into views.
     def partial_includepath
-      File.join(@directory_name, @filename, "_#{@filename}").gsub(/^\//, '')
+      @partial_includepath ||= File.join(@directory_name, @filename, "_#{@filename}").gsub(/^\//, '')
     end
 
     # Returns the asset_path of asset with the given extensions.
