@@ -60,7 +60,6 @@ namespace :sections do
       
       # Don't do anything if the page has no page-specific JS file.
       root_name = view[0..-10]
-      puts root_name
       next unless File.exists? "app/pages/#{view}.js"
     end
   end  
@@ -123,7 +122,6 @@ namespace :sections do
   def find_sections_in_section section_name
     section = SectionsRails::Section.new section_name
     partial_path = section.find_partial_filename
-    puts "section #{section_name} has partial #{partial_path}"
     if partial_path
       find_sections IO.read partial_path
     else
