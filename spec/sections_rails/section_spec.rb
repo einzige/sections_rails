@@ -8,20 +8,20 @@ describe SectionsRails::Section do
   describe 'initialize' do
 
     context 'with section in folder' do
-      its(:filename)       { should == 'section' }
-      its(:directory_name) { should == 'folder' }
-      its(:asset_path)     { should == 'folder/section/section' }
-      its(:absolute_asset_path)  { should == 'app/sections/folder/section/section' }
-      its(:partial_path)   { should == 'folder/section/_section' }
+      its(:filename)            { should == 'section' }
+      its(:directory_name)      { should == 'folder' }
+      its(:asset_path)          { should == 'folder/section/section' }
+      its(:absolute_asset_path) { should == 'app/sections/folder/section/section' }
+      its(:partial_path)        { should == 'folder/section/_section' }
     end
 
     context 'without folder' do
       subject { SectionsRails::Section.new 'section', nil }
-      its(:filename)       { should == 'section' }
-      its(:directory_name) { should == '' }
-      its(:asset_path)     { should == 'section/section' }
-      its(:absolute_asset_path)  { should == 'app/sections/section/section' }
-      its(:partial_path)   { should == 'section/_section' }
+      its(:filename)            { should == 'section' }
+      its(:directory_name)      { should == '' }
+      its(:asset_path)          { should == 'section/section' }
+      its(:absolute_asset_path) { should == 'app/sections/section/section' }
+      its(:partial_path)        { should == 'section/_section' }
     end
   end
 
