@@ -2,17 +2,14 @@ module SectionsRails
   require "sections_rails/config"
 
   class Section
-    attr_reader :asset_path, :css, :directory_name, :filename, :absolute_asset_path, :js, :locals, :partial, :partial_path
+    attr_reader :asset_path, :css, :directory_name, :filename, :absolute_asset_path, :js, :locals, :partial, :partial_include_path, :partial_file_path
 
     def initialize section_name, view = nil, options = {}
       section_name = section_name.to_s
 
       # Helpers for filenames.
-      @filename            = File.basename section_name, '.*'
-      @directory_name      = File.dirname(section_name).gsub(/^\.$/, '')
-      @asset_path          = File.join(@directory_name, @filename, @filename).gsub(/^\//, '')
-      @absolute_asset_path = File.join SectionsRails.config.path, @asset_path
-      @partial_path        = File.join(@directory_name, @filename, "_#{@filename}").gsub(/^\//, '')
+      @filename             = File.basename section_name, '.*'
+      @directory_name       = File.dirname(section_name).gsub(/^\.$/, '')
 
       # Options.
       @js      = options[:js]
@@ -24,14 +21,44 @@ module SectionsRails
       @view = view
     end
 
+    # Path of the folder on the file system.
+    # Example: 'app/sections/folder/section'
+    def folder_filepath
+      File.join SectionsRails.config.path, @directory_name, @filename
+    end
+
+    # Path to access assets on the file system.
+    # Includes only the base name of assets, without extensions.
+    # Example: 'app/sections/folder/section/section'
+    def asset_filepath
+      File.join SectionsRails.config.path, asset_includepath
+    end
+
+    # Path for including assets into the web page.
+    #
+    def asset_includepath
+      File.join(@directory_name, @filename, @filename).gsub(/^\//, '')
+    end
+
+    # The path for accessing the partial on the filesystem.
+    # Example: '
+    def partial_filepath
+      File.join SectionsRails.config.path, partial_includepath
+    end
+
+    # For including the partial into views.
+    def partial_includepath
+      File.join(@directory_name, @filename, "_#{@filename}").gsub(/^\//, '')
+    end
+
     # Returns the asset_path of asset with the given extensions.
     # Helper method.
     def find_asset_path asset_option, extensions
       return nil if asset_option == false
       return asset_option if asset_option
       extensions.each do |ext|
-        file_path = "#{@absolute_asset_path}.#{ext}"
-        return @asset_path if File.exists? file_path
+        file_path = "#{asset_filepath}.#{ext}"
+        return asset_includepath if File.exists? file_path
       end
       nil
     end
@@ -42,14 +69,14 @@ module SectionsRails
     end
 
     # Returns the path to the JS asset of this section, or nil if the section doesn't have one.
-    def find_js_asset_path
+    def find_js_includepath
       find_asset_path @js, SectionsRails.config.js_extensions
     end
 
     # Returns the filename of the partial of this section, or nil if this section has no partial.
     def find_partial_filename
       SectionsRails.config.partial_extensions.each do |ext|
-        path = File.join SectionsRails.config.path, "#{@partial_path}.#{ext}"
+        path = "#{partial_filepath}.#{ext}"
         return path if File.exists? path
       end
       nil
@@ -73,7 +100,7 @@ module SectionsRails
     # TODO: replace this with find_asset.
     def has_asset? *extensions
       extensions.flatten.each do |ext|
-        return true if File.exists?("#{@absolute_asset_path}.#{ext}")
+        return true if File.exists?("#{asset_filepath}.#{ext}")
       end
       false
     end

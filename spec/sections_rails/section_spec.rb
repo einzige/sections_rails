@@ -10,50 +10,65 @@ describe SectionsRails::Section do
     context 'with section in folder' do
       its(:filename)            { should == 'section' }
       its(:directory_name)      { should == 'folder' }
-      its(:asset_path)          { should == 'folder/section/section' }
-      its(:absolute_asset_path) { should == 'app/sections/folder/section/section' }
-      its(:partial_path)        { should == 'folder/section/_section' }
     end
 
     context 'without folder' do
       subject { SectionsRails::Section.new 'section', nil }
       its(:filename)            { should == 'section' }
       its(:directory_name)      { should == '' }
-      its(:asset_path)          { should == 'section/section' }
-      its(:absolute_asset_path) { should == 'app/sections/section/section' }
-      its(:partial_path)        { should == 'section/_section' }
     end
   end
 
-  describe 'find_js_asset_path' do
+  describe 'path helper methods' do
+
+    context 'section in a folder' do
+      its(:folder_filepath) { should == 'app/sections/folder/section' }
+      its(:asset_filepath)  { should == 'app/sections/folder/section/section' }
+      its(:asset_includepath)  { should == 'folder/section/section' }
+      its(:partial_filepath)  { should == 'app/sections/folder/section/_section' }
+      its(:partial_includepath)  { should == 'folder/section/_section' }
+    end
+
+    context 'section in root sections directory' do
+      subject { SectionsRails::Section.new 'section' }
+      its(:folder_filepath) { should == 'app/sections/section' }
+      its(:asset_filepath)  { should == 'app/sections/section/section' }
+      its(:asset_includepath)  { should == 'section/section' }
+      its(:partial_filepath)  { should == 'app/sections/section/_section' }
+      its(:partial_includepath)  { should == 'section/_section' }
+    end
+  end
+
+  describe 'find_js_includepath' do
+
     it 'tries all different JS asset file types for sections' do
       SectionsRails.config.js_extensions.each do |ext|
         File.should_receive(:exists?).with("app/sections/folder/section/section.#{ext}").and_return(false)
       end
-      subject.find_js_asset_path
+      subject.find_js_includepath
     end
 
     it 'returns nil if there is no known JS asset file' do
       SectionsRails.config.js_extensions.each do |ext|
         File.should_receive(:exists?).with("app/sections/folder/section/section.#{ext}").and_return(false)
       end
-      subject.find_js_asset_path.should be_false
+      subject.find_js_includepath.should be_false
     end
 
     it 'returns the asset path of the JS asset' do
       File.stub(:exists?).and_return(true)
-      subject.find_js_asset_path.should == 'folder/section/section'
+      subject.find_js_includepath.should == 'folder/section/section'
     end
 
     it 'returns nil if the file exists but the section has JS assets disabled' do
       File.stub(:exists?).and_return(true)
       section = SectionsRails::Section.new 'folder/section', nil, js: false
-      section.find_js_asset_path.should be_false
+      section.find_js_includepath.should be_false
     end
 
     it 'returns the custom JS asset path if one is set' do
       section = SectionsRails::Section.new 'folder/section', nil, js: 'custom'
-      section.find_js_asset_path.should == 'custom'
+      section.find_js_includepath.should == 'custom'
     end
   end
 
