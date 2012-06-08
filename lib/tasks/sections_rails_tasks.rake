@@ -7,8 +7,8 @@ namespace :sections do
 
     # Find all sections used in the views.
     sections = find_all_views('app/views').map do |view|
-      find_sections IO.read"app/views/#{view}"
-    end.flatten
+      find_sections IO.read "app/views/#{view}"
+    end.flatten.sort.uniq
     
     # Find all sections within the already known sections.
     i = 0
@@ -24,20 +24,20 @@ namespace :sections do
     
     # Create the require file for application.js.
     File.open "app/assets/javascripts/application_sections.js", 'w' do |file|
-      sections.each do |section|
-        if File.exists?(asset_path section, '.js') || File.exists?(asset_path section, '.js.coffee') || File.exists?(asset_path section, '.coffee')
-          file.write "//= require #{require_path section}\n"
-        end
+      sections.each do |section_name|
+        section = SectionsRails::Section.new section_name
+        js_asset = section.find_js_asset_path
+        file.write "//= require #{js_asset}\n" if js_asset
       end
     end
     
     # Create the require file for application.css.
     File.open "app/assets/stylesheets/application_sections.css", 'w' do |file|
       file.write "/*\n"
-      sections.each do |section|
-        if File.exists?(asset_path section, '.css') || File.exists?(asset_path section, '.css.scss') || File.exists?(asset_path section, '.css.sass') || File.exists?(asset_path section, '.scss') || File.exists?(asset_path section, '.sass')
-          file.write " *= require #{require_path section}\n"
-        end
+      sections.each do |section_name|
+        section = SectionsRails::Section.new section_name
+        js_asset = section.find_js_asset_path
+        file.write "//= require #{js_asset}\n" if js_asset
       end
       file.write " */"
     end
@@ -123,6 +123,7 @@ namespace :sections do
   def find_sections_in_section section_name
     section = SectionsRails::Section.new section_name
     partial_path = section.find_partial_filename
+    puts "section #{section_name} has partial #{partial_path}"
     if partial_path
       find_sections IO.read partial_path
     else
