@@ -1,33 +1,27 @@
 module SectionsRails
   require "sections_rails/config"
-  require "action_view"
 
   class Section
-    include ActionView::Helpers::AssetTagHelper
-    include ActionView::Helpers::RenderingHelper
+    attr_reader :asset_path, :css, :directory_name, :filename, :absolute_asset_path, :js, :locals, :partial, :partial_path
 
-    # TODO(KG): remove unnessessary.
-    attr_reader :asset_path, :css, :directory_name, :filename, :absolute_asset_path, :js, :locals, :partial, :partial_path, :path # NOTE (SZ): too many? :)
-
-    def initialize section_name, rails_obj = nil, options = {}
+    def initialize section_name, view = nil, options = {}
       section_name = section_name.to_s
 
       # Helpers for filenames.
-      @filename       = File.basename section_name, '.*'
-      @directory_name = File.dirname section_name
-      @directory_name = '' if @directory_name == '.'
-      @asset_path     = @directory_name != '' ? File.join(@directory_name, @filename, @filename) : File.join(@filename, @filename)
-      @absolute_asset_path  = File.join Rails.root, SectionsRails.config.path, @asset_path
-      @partial_path   = File.join Rails.root, SectionsRails.config.path, @directory_name, @filename, "_#{@filename}"
+      @filename            = File.basename section_name, '.*'
+      @directory_name      = File.dirname(section_name).gsub(/^\.$/, '')
+      @asset_path          = File.join(@directory_name, @filename, @filename).gsub(/^\//, '')
+      @absolute_asset_path = File.join SectionsRails.config.path, @asset_path
+      @partial_path        = File.join(@directory_name, @filename, "_#{@filename}").gsub(/^\//, '')
 
       # Options.
-      @js             = options[:js]
-      @css            = options[:css]
-      @partial        = options[:partial]
-      @locals         = options[:locals]
+      @js      = options[:js]
+      @css     = options[:css]
+      @partial = options[:partial]
+      @locals  = options[:locals]
 
       # For running view helper methods.
-      @rails_obj = rails_obj
+      @view = view
     end
 
     def find_existing_filename basename, extensions
@@ -36,11 +30,6 @@ module SectionsRails
         return path if File.exists? path
       end
       nil
-    end
-
-    # Returns the filename of the partial of this section, or nil if this section has no partial.
-    def find_partial_filename
-      find_existing_filename @partial_path, SectionsRails.config.partial_extensions
     end
 
     # Returns the asset_path of asset with the given extensions.
@@ -85,10 +74,7 @@ module SectionsRails
     # Returns whether this section has a template.
     # Deprecated.
     def has_partial?
-      SectionsRails.config.partial_extensions.each do |ext|
-        return true if File.exists?("#{@partial_path}.#{ext}")
-      end
-      false
+      @view.lookup_context.template_exists? @partial_path
     end
 
     # TODO(SZ): missing specs.
@@ -100,27 +86,27 @@ module SectionsRails
 
         # Include JS assets.
         if js
-          result << @rails_obj.javascript_include_tag(File.join(path, js))
+          result << @view.javascript_include_tag(File.join(path, js))
         elsif js == false
           # ":js => false" given --> don't include any JS.
         elsif has_default_js_asset?
-          result << @rails_obj.javascript_include_tag(asset_path)
+          result << @view.javascript_include_tag(asset_path)
         end
 
         # Include CSS assets.
         if css
-          result << @rails_obj.stylesheet_link_tag(File.join(path, css))
+          result << @view.stylesheet_link_tag(File.join(path, css))
         elsif css == false
           # ":css => false" given --> don't include any CSS.
         elsif has_default_style_asset?
-          result << @rails_obj.stylesheet_link_tag(@asset_path)
+          result << @view.stylesheet_link_tag(@asset_path)
         end
       end
 
       # Render the section partial into the view.
       case partial
         when :tag
-          result << @rails_obj.content_tag(:div, '', :class => filename)
+          result << @view.content_tag(:div, '', :class => filename)
 
         when false
           # partial: false given --> render nothing
@@ -129,15 +115,15 @@ module SectionsRails
           # partial: nil given --> render default partial
 
           if self.has_partial?
-            result << @rails_obj.render(:partial => asset_path, :locals => locals)
+            result << @view.render(:partial => asset_path, :locals => locals)
           else
-            result << @rails_obj.content_tag(:div, '', :class => filename)
+            result << @view.content_tag(:div, '', :class => filename)
           end
 
         else
           # partial: custom path given --> render custom partial
 
-          result << @rails_obj.render("#{path}/#{partial}", locals)
+          result << @view.render("#{path}/#{partial}", locals)
       end
 
       result.join("\n").html_safe
