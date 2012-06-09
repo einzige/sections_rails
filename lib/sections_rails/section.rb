@@ -5,11 +5,7 @@ module SectionsRails
     attr_reader :asset_path, :css, :directory_name, :filename, :absolute_asset_path, :js, :locals, :partial, :partial_include_path, :partial_file_path
 
     def initialize section_name, view = nil, options = {}
-      section_name = section_name.to_s
-
-      # Helpers for filenames.
-      @filename             = File.basename section_name, '.*'
-      @directory_name       = File.dirname(section_name).gsub(/^\.$/, '')
+      @section_name = section_name.to_s
 
       # Options.
       @js      = options[:js]
@@ -21,10 +17,22 @@ module SectionsRails
       @view = view
     end
 
+    # Returns the names of any subdirectories that the section is in.
+    # Example: the section named 'folder1/folder2/section' has the directory_name 'folder1/folder2'.
+    def directory_name
+      @directory_name ||= File.dirname(@section_name).gsub(/^\.$/, '')
+    end
+
+    # Returns the file name of the section.
+    # Example 'section'
+    def filename
+      @filename ||= File.basename @section_name, '.*'
+    end
+
     # Path of the folder on the file system.
     # Example: 'app/sections/folder/section'
     def folder_filepath
-      @folder_filepath ||= File.join SectionsRails.config.path, @directory_name, @filename
+      @folder_filepath ||= File.join SectionsRails.config.path, directory_name, filename
     end
 
     # Path to access assets on the file system.
@@ -37,7 +45,7 @@ module SectionsRails
     # Path for including assets into the web page.
     #
     def asset_includepath
-      @asset_includepath ||= File.join(@directory_name, @filename, @filename).gsub(/^\//, '')
+      @asset_includepath ||= File.join(directory_name, filename, filename).gsub(/^\//, '')
     end
 
     # The path for accessing the partial on the filesystem.
@@ -48,7 +56,7 @@ module SectionsRails
 
     # For including the partial into views.
     def partial_includepath
-      @partial_includepath ||= File.join(@directory_name, @filename, "_#{@filename}").gsub(/^\//, '')
+      @partial_includepath ||= File.join(directory_name, filename, "_#{filename}").gsub(/^\//, '')
     end
 
     # Returns the asset_path of asset with the given extensions.
