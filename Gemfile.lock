@@ -124,7 +124,6 @@ DEPENDENCIES
   guard-rspec
   jquery-rails
   rb-fsevent
-  rspec
   rspec-rails
   sections_rails!
   sqlite3

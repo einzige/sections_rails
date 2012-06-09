@@ -1,8 +1,10 @@
 require 'rubygems'
 require 'bundler/setup'
 require 'rails'
+require File.expand_path("../dummy/config/environment.rb",  __FILE__)
+
 require 'rspec'
-require 'rspec-rails'
+require 'rspec/rails'
 require 'sections_rails'
 
 # Configure Rails Environment
