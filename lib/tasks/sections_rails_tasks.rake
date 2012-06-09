@@ -95,7 +95,7 @@ namespace :sections do
   def find_all_views root
     result = []
     Dir.entries(root).each do |dir|
-      next if ['.', '..', 'layouts'].include? dir      
+      next if ['.', '..'].include? dir
       Dir.entries(File.join(root, dir)).each do |view_file|
         next if ['.', '..'].include? view_file
         next if view_file[-4..-1] == '.swp'
