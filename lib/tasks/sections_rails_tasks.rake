@@ -1,5 +1,4 @@
 namespace :sections do
-  include SectionsRails::Helpers
 
   desc "Prepares the assets for precompilation in a setup with a single application.js file"
   task :prepare do
@@ -127,18 +126,6 @@ namespace :sections do
     else
       []
     end
-  end
-
-  # Returns the path to the asset in the given section.
-  def asset_path section_name, asset_extension = nil, asset_prefix = nil
-    directory, filename = split_path section_name
-    "app/sections/#{directory}#{filename}/#{asset_prefix}#{filename}#{asset_extension}"
-  end
-
-  # Returns the relative path to the asset for the asset pipeline.
-  def require_path section_name
-    directory, filename = split_path section_name
-    "../../sections/#{directory}#{filename}/#{filename}"
   end
 end
 

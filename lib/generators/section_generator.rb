@@ -1,7 +1,5 @@
 # Generates a new section.
 class SectionGenerator < Rails::Generators::Base
-  include SectionsRails::Helpers
-
   argument :name, :type => :string
 
   def parse_arguments
