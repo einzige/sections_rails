@@ -7,7 +7,7 @@ namespace :sections do
 
     # Find all sections used in the views.
     sections = find_all_views('app/views').map do |view|
-      find_sections IO.read "app/views/#{view}"
+      SectionsRails::Section.find_sections IO.read "app/views/#{view}"
     end.flatten.sort.uniq
     
     # Find all sections within the already known sections.
@@ -26,7 +26,7 @@ namespace :sections do
     File.open "app/assets/javascripts/application_sections.js", 'w' do |file|
       sections.each do |section_name|
         section = SectionsRails::Section.new section_name
-        js_asset = section.find_js_asset_path
+        js_asset = section.find_js_includepath
         file.write "//= require #{js_asset}\n" if js_asset
       end
     end
@@ -36,7 +36,7 @@ namespace :sections do
       file.write "/*\n"
       sections.each do |section_name|
         section = SectionsRails::Section.new section_name
-        js_asset = section.find_css_asset_path
+        js_asset = section.find_css_includepath
         file.write "*= require #{js_asset}\n" if js_asset
       end
       file.write " */"
@@ -121,9 +121,9 @@ namespace :sections do
 
   def find_sections_in_section section_name
     section = SectionsRails::Section.new section_name
-    partial_path = section.find_partial_filename
+    partial_path = section.find_partial_filepath
     if partial_path
-      find_sections IO.read partial_path
+      SectionsRails::Section.find_sections IO.read partial_path
     else
       []
     end
