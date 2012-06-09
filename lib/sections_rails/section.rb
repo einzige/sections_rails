@@ -6,14 +6,9 @@ module SectionsRails
 
     def initialize section_name, view = nil, options = {}
       @section_name = section_name.to_s
+      @options = options
 
-      # Options.
-      @js      = options[:js]
-      @css     = options[:css]
-      @partial = options[:partial]
-      @locals  = options[:locals]
-
-      # For running view helper methods.
+      # This is necessary for running view helper methods.
       @view = view
     end
 
@@ -73,12 +68,12 @@ module SectionsRails
 
     # Returns the path to the JS asset of this section, or nil if the section doesn't have one.
     def find_css_asset_path
-      find_asset_path @css, SectionsRails.config.css_extensions
+      find_asset_path @options[:css], SectionsRails.config.css_extensions
     end
 
     # Returns the path to the JS asset of this section, or nil if the section doesn't have one.
     def find_js_includepath
-      find_asset_path @js, SectionsRails.config.js_extensions
+      find_asset_path @options[:js], SectionsRails.config.js_extensions
     end
 
     # Returns the filename of the partial of this section, or nil if this section has no partial.
@@ -126,7 +121,7 @@ module SectionsRails
     # Returns whether this section has a template.
     # Deprecated.
     def has_partial?
-      @view.lookup_context.template_exists? @partial_path
+      @view.lookup_context.template_exists? @partial_includepath
     end
 
     # TODO(SZ): missing specs.
