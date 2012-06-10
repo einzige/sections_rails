@@ -23,6 +23,12 @@ module SectionsRails
       @filename ||= File.basename @section_name, '.*'
     end
 
+    # Path to the folder for asset includes.
+    # Example: 'folder/section'
+    def folder_includepath
+      @folder_includepath ||= File.join directory_name, filename
+    end
+
     # Path of the folder on the file system.
     # Example: 'app/sections/folder/section'
     def folder_filepath
@@ -132,7 +138,7 @@ module SectionsRails
 
         # Include JS assets.
         if @options[:js]
-          result << @view.javascript_include_tag(File.join(path, js))
+          result << @view.javascript_include_tag(File.join(folder_includepath, @options[:js]))
         elsif @options[:js] == false
           # ":js => false" given --> don't include any JS.
         else
