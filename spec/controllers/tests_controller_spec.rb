@@ -3,11 +3,17 @@ require 'spec_helper'
 describe TestsController do
   render_views
 
-  describe 'one' do
-    it 'works' do
-      get :one
+  describe 'including partials' do
+    it 'includes ERB partials' do
+      get :erb_section
       response.should be_success
-      response.body.strip.should == 'Hello!'
+      response.body.strip.should == 'ERB partial content'
+    end
+
+    it 'includes HAML partials' do
+      get :haml_section
+      response.should be_success
+      response.body.strip.should == 'HAML partial content'
     end
   end
 end

@@ -1,4 +1,8 @@
 class TestsController < ApplicationController
-  def one
+
+  def erb_section
+  end
+
+  def haml_section
   end
 end
