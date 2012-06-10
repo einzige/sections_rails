@@ -1,19 +1,22 @@
 require 'spec_helper'
 
-describe TestsController do
+describe PartialTypesController do
   render_views
 
-  describe 'including partials' do
-    it 'includes ERB partials' do
-      get :erb_section
+  describe 'supported partial types' do
+
+    it 'allows to use ERB partials' do
+      get :erb
       response.should be_success
       response.body.strip.should == 'ERB partial content'
     end
 
-    it 'includes HAML partials' do
-      get :haml_section
+    it 'allows to use HAML partials' do
+      get :haml
       response.should be_success
       response.body.strip.should == 'HAML partial content'
     end
   end
 end
+
+
