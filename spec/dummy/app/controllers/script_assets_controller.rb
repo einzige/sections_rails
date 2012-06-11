@@ -11,5 +11,8 @@ class ScriptAssetsController < ApplicationController
 
   def no_script
   end
+
+  def production_mode
+  end
 end
 

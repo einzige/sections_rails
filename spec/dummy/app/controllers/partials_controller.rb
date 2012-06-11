@@ -15,4 +15,6 @@ class PartialsController < ApplicationController
   def disabled
   end
 
+  def production_mode
+  end
 end

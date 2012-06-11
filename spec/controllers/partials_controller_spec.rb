@@ -53,6 +53,22 @@ describe PartialsController do
       response.body.strip.should_not include 'disabled partial content'
     end
   end
+
+  context 'production mode' do
+
+    before :each do
+      Rails.env = 'production'
+    end
+
+    after :each do
+      Rails.env = 'test'
+    end
+
+    it 'renders partials normally' do
+      get :production_mode
+      response.body.strip.should include 'partial content'
+    end
+  end
 end
 
 

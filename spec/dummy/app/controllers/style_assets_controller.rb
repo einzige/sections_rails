@@ -21,4 +21,7 @@ class StyleAssetsController < ApplicationController
   def no_style
   end
 
+  def production_mode
+  end
+
 end

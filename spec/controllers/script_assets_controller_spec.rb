@@ -47,6 +47,21 @@ describe ScriptAssetsController do
       response.body.should_not match /<script/
     end
   end
+
+  context 'production mode' do
+    before :each do
+      Rails.env = 'production'
+    end
+
+    after :each do
+      Rails.env = 'test'
+    end
+
+    it "doesn't render script assets" do
+      get :production_mode
+      response.should_not have_script_tag '/assets/script_assets/production_mode/production_mode.js'
+    end
+  end
 end
 
 

@@ -62,5 +62,21 @@ describe StyleAssetsController do
       response.body.should_not have_style_tag '/assets/style_assets/no_style/no_style.css'
     end
   end
+
+  context 'production_mode' do
+
+    before :each do
+      Rails.env = "production"
+    end
+
+    after :each do
+      Rails.env = "test"
+    end
+
+    it "doesn't render style assets" do
+      get :production_mode
+      response.body.should_not have_style_tag '/assets/style_assets/production_mode/production_mode.css'
+    end
+  end
 end
 
