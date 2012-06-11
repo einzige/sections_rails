@@ -50,8 +50,14 @@ module SectionsRails
 
     # The path for accessing the partial on the filesystem.
     # Example: '
-    def partial_filepath
-      @partial_filepath ||= File.join(SectionsRails.config.path, directory_name,filename, "_#{filename}").gsub(/^\//, '')
+    def partial_renderpath partial_filename = nil
+      File.join(directory_name, filename, partial_filename || filename).gsub(/^\//, '')
+    end
+
+    # The path for accessing the partial on the filesystem.
+    # Example: '
+    def partial_filepath partial_filename = nil
+      File.join(SectionsRails.config.path, directory_name,filename, "_#{partial_filename or filename}").gsub(/^\//, '')
     end
 
     # For including the partial into views.
@@ -82,10 +88,20 @@ module SectionsRails
     end
 
     # Returns the filename of the partial of this section, or nil if this section has no partial.
-    def find_partial_filepath
+    # Uses the given custom partial name, or the default partial name if none is given.
+    def find_partial_filepath partial_filename = nil
       SectionsRails.config.partial_extensions.each do |ext|
-        path = "#{partial_filepath}.#{ext}"
+        path = "#{partial_filepath(filename)}.#{ext}"
         return path if File.exists? path
+      end
+      nil
+    end
+
+    # Returns the path of the partial of this section for rendering, or nil if this section has no partial.
+    # Uses the given custom partial name, or the default partial name if none is given.
+    def find_partial_renderpath partial_filename = nil
+      SectionsRails.config.partial_extensions.each do |ext|
+        return partial_renderpath(partial_filename) if File.exists? "#{partial_filepath(filename)}.#{ext}"
       end
       nil
     end
@@ -167,25 +183,24 @@ module SectionsRails
       end
 
       # Render the section partial into the view.
-      case @options[:partial]
-        when :tag
+      if @options.has_key? :partial
+        if @options[:partial] == :tag
+          # :partial => :tag given --> render the empty tag even if there is a partial present.
           result << @view.content_tag(:div, '', :class => filename)
-
-        when false
-          # partial: false given --> render nothing
-
-        when nil
-          # partial: nil given --> render default partial
-          partial_filepath = find_partial_filepath
-          if partial_filepath
-            result << @view.render(:partial => partial_includepath, :locals => @options[:locals])
-          else
-            result << @view.content_tag(:div, '', :class => filename)
-          end
-
+        elsif @options[:partial]
+          # Custom partial name given --> render that partial.
+          result << @view.render(find_partial_renderpath(@options[:partial]), @options[:locals])
         else
-          # partial: custom path given --> render custom partial
-          result << @view.render("#{path}/#{partial}", @options[:locals])
+          # :partial => (false|nil) given --> render nothing.
+        end
+      else
+        # No :partial option given --> render the default partial.
+        partial_filepath = find_partial_filepath
+        if partial_filepath
+          result << @view.render(:partial => partial_includepath, :locals => @options[:locals])
+        else
+          result << @view.content_tag(:div, '', :class => filename)
+        end
       end
 
       result.join("\n").html_safe

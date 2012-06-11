@@ -26,7 +26,10 @@ describe SectionsRails::Section do
       its(:asset_filepath)  { should == 'app/sections/folder/section/section' }
       its(:asset_includepath)  { should == 'folder/section/section' }
       its(:partial_filepath)  { should == 'app/sections/folder/section/_section' }
+      it { subject.partial_filepath('foo').should == 'app/sections/folder/section/_foo' }
       its(:partial_includepath)  { should == 'folder/section/section' }
+      its(:partial_renderpath)  { should == 'folder/section/section' }
+      it { subject.partial_renderpath('foo').should == 'folder/section/foo' }
     end
 
     context 'section in root sections directory' do
@@ -69,6 +72,27 @@ describe SectionsRails::Section do
     it 'returns the custom JS asset path if one is set' do
       section = SectionsRails::Section.new 'folder/section', nil, js: 'custom'
       section.find_js_includepath.should == 'custom'
+    end
+  end
+
+
+  describe 'find_partial_renderpath' do
+
+    it 'looks for all known types of partials' do
+      File.should_receive(:exists?).with("app/sections/folder/section/_section.html.erb").and_return(false)
+      File.should_receive(:exists?).with("app/sections/folder/section/_section.html.haml").and_return(false)
+      subject.find_partial_renderpath
+    end
+
+    it "returns nil if it doesn't find any assets" do
+      File.should_receive(:exists?).with("app/sections/folder/section/_section.html.erb").and_return(false)
+      File.should_receive(:exists?).with("app/sections/folder/section/_section.html.haml").and_return(false)
+      subject.find_partial_renderpath.should be_false
+    end
+
+    it "returns the path for rendering of the asset if it finds one" do
+      File.stub(:exists?).and_return(true)
+      subject.find_partial_renderpath.should == 'folder/section/section'
     end
   end
 
