@@ -137,21 +137,28 @@ module SectionsRails
       if Rails.env != 'production'
 
         # Include JS assets.
-        if @options[:js]
-          result << @view.javascript_include_tag(File.join(folder_includepath, @options[:js]))
-        elsif @options[:js] == false
-          # ":js => false" given --> don't include any JS.
+        if @options.has_key? :js
+          if @options[:js]
+            result << @view.javascript_include_tag(File.join(folder_includepath, @options[:js]))
+          else
+            # :js => (false|nil) given --> don't include any JS.
+          end
         else
+          # No :js configuration option given --> include the default script.
           js_includepath = find_js_includepath
           result << @view.javascript_include_tag(js_includepath) if js_includepath
         end
 
         # Include CSS assets.
-        if @options[:css]
-          result << @view.stylesheet_link_tag(File.join(path, css))
-        elsif @options[:css] == false
-          # ":css => false" given --> don't include any CSS.
+        if @options.has_key? :css
+          if @options[:css]
+            # Custom filename for :css given --> include the given CSS file.
+            result << @view.stylesheet_link_tag(File.join(folder_includepath, @options[:css]))
+          else
+            # ":css => false" given --> don't include any CSS.
+          end
         else
+          # No option for :css given --> include the default stylesheet.
           css_includepath = find_css_includepath
           result << @view.stylesheet_link_tag(css_includepath) if css_includepath
         end

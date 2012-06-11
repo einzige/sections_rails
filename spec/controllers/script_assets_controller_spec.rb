@@ -7,7 +7,7 @@ describe ScriptAssetsController do
     response.should be_success
   end
 
-  describe 'supported script language types' do
+  describe 'supported script languages' do
     it 'allows to use JavaScript assets' do
       get :javascript
       response.body.should match /<script.*src=\"\/assets\/script_assets\/javascript\/javascript\.js".*<\/script>/
