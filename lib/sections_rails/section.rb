@@ -129,9 +129,11 @@ module SectionsRails
       @view.lookup_context.template_exists? partial_includepath
     end
 
-    # TODO(SZ): missing specs.
     def render
       result = []
+
+      # Check if section exists.
+      raise "Section #{folder_filepath} doesn't exist." unless Dir.exists? folder_filepath
 
       # Include assets only for development mode.
       if Rails.env != 'production'
