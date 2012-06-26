@@ -1,25 +1,20 @@
+require 'sections_rails/view_finder'
+
 namespace :sections do
 
   desc "Prepares the assets for precompilation in a setup with a single application.js file"
   task :prepare do
-    print "\nPreparing sections assets ..." ; STDOUT.flush
+    puts "\nPreparing sections assets:"
 
-    # Find all sections used in the views.
-    sections = find_all_views('app/views').map do |view|
-      SectionsRails::Section.find_sections IO.read "app/views/#{view}"
-    end.flatten.sort.uniq
-    
-    # Find all sections within the already known sections.
-    i = 0
-    while i < sections.size
-      section = sections[i]
-      referenced_sections = find_sections_in_section section
-      referenced_sections.each do |referenced_section|
-        sections << referenced_section unless sections.include? referenced_section
+    sections = SectionsRails::ViewFinder.find_all_views('app/views').map do |view| 
+      SectionsRails::PartialParser.find_sections(IO.read view).map do |section_name|
+        sections = SectionsRails::Section.new(section_name).referenced_sections
+        sections << section_name
+        puts "* #{section_name}: #{sections.join ', '}"
+        sections
       end
-      i += 1
-    end
-    sections.sort!
+    end.flatten.sort.uniq
+    puts ''
     
     # Create the require file for application.js.
     File.open "app/assets/javascripts/application_sections.js", 'w' do |file|
@@ -35,13 +30,11 @@ namespace :sections do
       file.write "/*\n"
       sections.each do |section_name|
         section = SectionsRails::Section.new section_name
-        js_asset = section.find_css_includepath
-        file.write "*= require #{js_asset}\n" if js_asset
+        css_asset = section.find_css_includepath
+        file.write " *= require #{css_asset}\n" if css_asset
       end
       file.write " */"
     end
-    
-    puts " done.\n\n"
   end
 
   desc "Prepares the assets for precompilation in a setup with multiple files per page."
@@ -90,42 +83,9 @@ namespace :sections do
   end
 
 
-  # Returns an array with the file name of all views in the given directory.
-  # Views are all files that end in .html.erb
-  def find_all_views root
-    result = []
-    Dir.entries(root).each do |dir|
-      next if ['.', '..'].include? dir
-      Dir.entries(File.join(root, dir)).each do |view_file|
-        next if ['.', '..'].include? view_file
-        next if view_file[-4..-1] == '.swp'
-        view_path = File.join(dir, view_file)
-        next if File.directory? "#{root}/#{view_path}"
-        result << view_path
-      end
-    end
-    result
-  end
-
-  # Used for :prepare_pages. Not used right now.
-  def parse_views views
-    result = {}
-    views_to_parse.each do |view_to_parse|
-      view_text = IO.read(File.join root, view_to_parse)
-      result[view_to_parse] = find_sections_in_text view_text
-    end
-    result
-  end
-  
-
   def find_sections_in_section section_name
     section = SectionsRails::Section.new section_name
-    partial_path = section.find_partial_filepath
-    if partial_path
-      SectionsRails::Section.find_sections IO.read partial_path
-    else
-      []
-    end
+    SectionsRails::Section.find_sections section.partial_content
   end
 end
 

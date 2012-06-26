@@ -1,5 +1,6 @@
 module SectionsRails
   require "sections_rails/config"
+  require 'sections_rails/partial_parser'
 
   class Section
 
@@ -65,6 +66,15 @@ module SectionsRails
       @partial_includepath ||= File.join(directory_name, filename, "#{filename}").gsub(/^\//, '')
     end
 
+    # Returns the content of this sections partial.
+    def partial_content
+      return @partial_content if @has_partial_content
+      @has_partial_content = true
+      if (partial_path = find_partial_filepath)
+        @partial_content = IO.read partial_path
+      end
+    end
+
     # Returns the asset path of asset with the given extensions.
     # Helper method.
     def find_asset_includepath asset_option, extensions
@@ -106,21 +116,6 @@ module SectionsRails
       nil
     end
 
-    # Returns a list of all section names in the given text.
-    #
-    # @param [ String ] text
-    # @return [ Array<String> ]
-    def self.find_sections text
-
-      # Find sections in ERB templates.
-      result = text.scan(/<%=\s*section\s+['":]([^'",\s]+)/).flatten.sort.uniq
-
-      # Find sections in HAML templates.
-      result.concat text.scan(/^\s*\=\s*section\s+['":]([^'",\s]+)/).flatten.sort.uniq
-
-      result
-    end
-
     # TODO: replace this with find_asset.
     def has_asset? *extensions
       extensions.flatten.each do |ext|
@@ -143,6 +138,24 @@ module SectionsRails
     # Deprecated.
     def has_partial?
       @view.lookup_context.template_exists? partial_includepath
+    end
+
+    # Returns the sections that this section references.
+    # If 'recursive = true' is given, searches recursively for sections referenced by the referenced sections.
+    # Otherwise, simply returns the sections that are referenced by this section.
+    def referenced_sections recursive = true
+      result = PartialParser.find_sections partial_content
+
+      # Find all sections within the already known sections.
+      if recursive
+        i = -1
+        while (i += 1) < result.size
+          Section.new(result[i]).referenced_sections(false).each do |referenced_section|
+            result << referenced_section unless result.include? referenced_section
+          end
+        end
+      end
+      result.sort!
     end
 
     def render

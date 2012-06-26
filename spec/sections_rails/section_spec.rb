@@ -44,9 +44,9 @@ describe SectionsRails::Section do
   describe 'find_js_includepath' do
 
     it 'tries all different JS asset file types for sections' do
-      SectionsRails.config.js_extensions.each do |ext|
-        File.should_receive(:exists?).with("app/sections/folder/section/section.#{ext}").and_return(false)
-      end
+      File.should_receive(:exists?).with("app/sections/folder/section/section.js").and_return(false)
+      File.should_receive(:exists?).with("app/sections/folder/section/section.js.coffee").and_return(false)
+      File.should_receive(:exists?).with("app/sections/folder/section/section.coffee").and_return(false)
       subject.find_js_includepath
     end
 
@@ -69,6 +69,7 @@ describe SectionsRails::Section do
     end
 
     it 'returns the custom JS asset path if one is set' do
+      File.stub(:exists?).and_return(true)
       section = SectionsRails::Section.new 'folder/section', nil, js: 'custom'
       section.find_js_includepath.should == 'custom'
     end
@@ -117,57 +118,6 @@ describe SectionsRails::Section do
   end
 
 
-  describe '#find_sections' do
-    it 'finds ERB sections with symbols' do
-      SectionsRails::Section.find_sections("one <%= section :alpha %> two").should == ['alpha']
-    end
-
-    it 'finds ERB sections with single quotes' do
-      SectionsRails::Section.find_sections("one <%= section 'alpha' %> two").should == ['alpha']
-    end
-
-    it 'finds ERB sections with double quotes' do
-      SectionsRails::Section.find_sections('one <%= section "alpha" %> two').should == ['alpha']
-    end
-
-    it 'finds ERB sections with parameters' do
-      SectionsRails::Section.find_sections('one <%= section "alpha", css: false %> two').should == ['alpha']
-    end
-
-    it 'finds HAML sections with symbols' do
-      SectionsRails::Section.find_sections("= section :alpha").should == ['alpha']
-    end
-
-    it 'finds HAML sections with single quotes' do
-      SectionsRails::Section.find_sections("= section 'alpha'").should == ['alpha']
-    end
-
-    it 'finds HAML sections with double quotes' do
-      SectionsRails::Section.find_sections('= section "alpha"').should == ['alpha']
-    end
-
-    it 'finds indented HAML sections' do
-      SectionsRails::Section.find_sections('    = section "alpha"').should == ['alpha']
-    end
-
-    it 'finds HAML sections with parameters' do
-      SectionsRails::Section.find_sections('= section "alpha", css: false').should == ['alpha']
-    end
-
-    it 'finds all results in the text' do
-      SectionsRails::Section.find_sections("one <%= section 'alpha' \ntwo <%= section 'beta'").should == ['alpha', 'beta']
-    end
-
-    it 'sorts the results' do
-      SectionsRails::Section.find_sections("one <%= section 'beta' \ntwo <%= section 'alpha'").should == ['alpha', 'beta']
-    end
-
-    it 'removes duplicates' do
-      SectionsRails::Section.find_sections("one <%= section 'alpha' \ntwo <%= section 'alpha'").should == ['alpha']
-    end
-  end
-
-
   describe "#has_asset?" do
 
     it "tries filename variations with all given extensions" do
@@ -201,4 +151,40 @@ describe SectionsRails::Section do
       subject.has_default_js_asset?.should be_true
     end
   end
+
+  describe 'partial_content' do
+    it 'returns the content of the partial if one exists' do
+      SectionsRails::Section.new('partial_content/erb_partial').partial_content.strip.should == 'ERB partial content'
+      SectionsRails::Section.new('partial_content/haml_partial').partial_content.strip.should == 'HAML partial content'
+    end
+
+    it 'returns nil if no partial exists' do
+      SectionsRails::Section.new('partial_content/no_partial').partial_content.should be_nil
+    end
+  end
+
+  describe 'referenced_sections' do
+
+    it 'returns the sections that are referenced in the section partial' do
+      SectionsRails::Section.new('referenced_sections/erb_partial').referenced_sections.should == ['one', 'two/three']
+      SectionsRails::Section.new('referenced_sections/haml_partial').referenced_sections.should == ['one', 'two/three']
+    end
+
+    it 'returns an empty array if there is no partial' do
+      SectionsRails::Section.new('referenced_sections/no_partial').referenced_sections.should == []
+    end
+
+    it "returns an empty array if the partial doesn't reference any sections" do
+      SectionsRails::Section.new('referenced_sections/no_referenced_sections').referenced_sections.should == []
+    end
+
+    it 'finds sections referenced by referenced sections' do
+      SectionsRails::Section.new('referenced_sections/recursive').referenced_sections.should == ['referenced_sections/recursive/one', 'referenced_sections/recursive/three', 'referenced_sections/recursive/two']
+    end
+
+    it 'can handle reference loops' do
+      SectionsRails::Section.new('referenced_sections/loop').referenced_sections.should == ['referenced_sections/loop', 'referenced_sections/loop/one']
+    end
+  end
 end
+
