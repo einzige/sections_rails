@@ -4,7 +4,7 @@ module SectionsRails
   require "sections_rails/railtie" if defined?(Rails)
 
   def section name, options = {}, &block
-    SectionsRails::Section.new(name, self, options, block).render
+    SectionsRails::Section.new(name, self, options).render &block
   end
 end
 

@@ -8,7 +8,7 @@ This makes it easier to work on those pieces, makes them more reusable, and larg
 # Example
 
 Let's take the navigation menu within a web site as an example section.
-It consists of certain HTML, CSS, and JavaScript code as well as image resources. 
+It consists of certain HTML, CSS, and JavaScript code as well as image resources.
 These assets must be loaded on every page that this navigation menu is visible on,
 and should be removed when the navigation menu is removed from the site.
 
@@ -40,10 +40,10 @@ To embed this menu and all its assets into a page, simply do this in your view:
 
 This command inserts the partial as well as the JS and CSS files from _/app/sections/menu_ into the page.
 
-It does the right thing in all circumstances: In development mode it inserts the individual assets, 
+It does the right thing in all circumstances: In development mode it inserts the individual assets,
 in production mode the assets are included into the precompilation targets.
 
-The gem source comes with a bundled example Rails app in the _demo/_ directory. 
+The gem source comes with a bundled example Rails app in the _demo/_ directory.
 It provides several working examples of sections in action in _views/demos/index.html.erb_.
 
 
@@ -75,8 +75,8 @@ The generator does the following things:
 
 In it's current prototypical implementation, _Sections_rails_ also creates empty asset container files:
 __application_sections.js__ and __application_sections.css__.
-Make sure you require them from your main _application.js_ and _application.css_ files. 
-They are used only when running _rake assets:precompile_ during deployment, and should be checked in and stay the way they are. 
+Make sure you require them from your main _application.js_ and _application.css_ files.
+They are used only when running _rake assets:precompile_ during deployment, and should be checked in and stay the way they are.
 
 
 # Usage
@@ -96,7 +96,7 @@ In this case, the _sections_ helper creates an empty div in the view.
 
 ## Options
 
-By default, a section automatically includes partials, css, and js files with the section name if they exist. 
+By default, a section automatically includes partials, css, and js files with the section name if they exist.
 This convention can be overridden. The following example renders the _hello_world_ section with a different partial, with no stylesheet,
 and it uses the custom _foobar.js_ instead of _hello_world.js_.
 
@@ -110,7 +110,7 @@ It is also possible to provide parameters to the rendered partial.
 <%= section :hello_world, locals: { message: 'Greetings!' } %>
 ```
 
-You can also provide a block to the section, which can be included into the partial by saying 
+You can also provide a block to the section, which can be included into the partial by saying
 
 
 ## Inline blocks for sections.
@@ -128,7 +128,7 @@ You can provide a block to the section, like so:
 This block can be included into the partial:
 ```erb
 Partial content...
-<%= capture &block %>
+<%= yield %>
 Partial content...
 ```
 
