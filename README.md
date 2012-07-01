@@ -110,6 +110,9 @@ It is also possible to provide parameters to the rendered partial.
 <%= section :hello_world, locals: { message: 'Greetings!' } %>
 ```
 
+You can also provide a block to the section, which can be included into the partial by saying `capture &block`.
+
+
 ## Creating new sections.
 
 To create a new section, simply create a new folder under _/app/sections_ and add the partials, css, js, jst, and test files for this section.
