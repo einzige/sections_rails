@@ -4,9 +4,13 @@ module SectionsRails
 
   class Section
 
-    def initialize section_name, view = nil, options = {}
+    def initialize section_name, view = nil, options = {}, block = nil
       @section_name = section_name.to_s
       @options = options
+      if block
+        @options[:locals] ||= {}
+        @options[:locals][:block] = block
+      end
 
       # This is necessary for running view helper methods.
       @view = view

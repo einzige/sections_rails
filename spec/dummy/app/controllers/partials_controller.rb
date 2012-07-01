@@ -17,4 +17,7 @@ class PartialsController < ApplicationController
 
   def production_mode
   end
+
+  def partial_with_block
+  end
 end

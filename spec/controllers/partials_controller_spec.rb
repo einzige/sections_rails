@@ -26,7 +26,7 @@ describe PartialsController do
     end
   end
 
-  context 'providing a custom partial name' do
+  describe 'providing a custom partial name' do
     before :each do
       get :custom_partial
     end
@@ -40,7 +40,7 @@ describe PartialsController do
     end
   end
 
-  context 'disabling partials for a section' do
+  describe 'disabling partials for a section' do
     before :each do
       get :disabled
     end
@@ -54,7 +54,7 @@ describe PartialsController do
     end
   end
 
-  context 'production mode' do
+  describe 'production mode' do
 
     before :each do
       Rails.env = 'production'
@@ -67,6 +67,13 @@ describe PartialsController do
     it 'renders partials normally' do
       get :production_mode
       response.body.strip.should include 'partial content'
+    end
+  end
+
+  describe 'partial with block' do
+    it 'allows to render the block inside the partial' do
+      get :partial_with_block
+      response.body.strip.should == "partial line 1.\nblock content.\npartial line 2."
     end
   end
 end
