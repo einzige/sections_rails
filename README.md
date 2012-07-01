@@ -110,7 +110,11 @@ It is also possible to provide parameters to the rendered partial.
 <%= section :hello_world, locals: { message: 'Greetings!' } %>
 ```
 
-You can also provide a block to the section, which can be included into the partial by saying `capture &block`.
+You can also provide a block to the section, which can be included into the partial by saying 
+
+```erb
+<%= capture &block %>
+```
 
 
 ## Creating new sections.
