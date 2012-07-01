@@ -112,9 +112,27 @@ It is also possible to provide parameters to the rendered partial.
 
 You can also provide a block to the section, which can be included into the partial by saying 
 
+
+## Inline blocks for sections.
+
+You can provide a block to the section, like so:
+
 ```erb
-<%= capture &block %>
+<%= section :section_with_block do %>
+  <h1>  Elaborate </h1>
+  <div> Block     </div>
+  <p>   content   </p>
+<% end %>
 ```
+
+This block can be included into the partial:
+```erb
+Partial content...
+<%= capture &block %>
+Partial content...
+```
+
+This allows to define the content of parts of the section dynamically in the calling view, using view helper methods.
 
 
 ## Creating new sections.
